@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stardew Valley — Year 1 Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5ede0;--surface:#fdf8f0;--border:#8b6b4a;--text:#2d1a0a;
+  --primary:#5d8a4d;--pdark:#3d6a2d;--accent:#c46a1e;--muted:#8b7460;
+  --card:#fff9f0;--shadow:rgba(61,42,15,0.18);
+}
+.ss{--bg:#e8f0ff;--surface:#f0f5ff;--primary:#2563a8;--pdark:#1a4a88;--accent:#f5a623;--card:#f0f8ff;}
+.sf{--bg:#fff0e0;--surface:#fff8f0;--primary:#c46a1e;--pdark:#9a4a0e;--accent:#6d8b2f;--card:#fff5ec;}
+.sw{--bg:#e8eeff;--surface:#f0f4ff;--primary:#4055b8;--pdark:#2a3a90;--accent:#8aa8d8;--card:#f0f4ff;}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);font-size:20px;min-height:100vh;transition:background .4s;}
+h1{font-size:2.2rem;line-height:1.2;}
+h2{font-size:1.6rem;}
+h3{font-size:1.2rem;}
+
+/* ── SETUP SCREEN ── */
+#setup{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;}
+.setup-card{background:var(--card);border:3px solid var(--border);padding:2rem;max-width:500px;width:100%;box-shadow:6px 6px 0 var(--shadow);}
+.setup-card h1{text-align:center;color:var(--primary);margin-bottom:.5rem;}
+.setup-tagline{text-align:center;color:var(--muted);margin-bottom:1.5rem;}
+.form-group{margin-bottom:1.2rem;}
+.form-group label{display:block;color:var(--muted);margin-bottom:.4rem;font-size:1rem;}
+.season-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.sBtn{flex:1;min-width:100px;padding:.5rem .3rem;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-family:'VT323',monospace;font-size:1.1rem;transition:all .2s;}
+.sBtn.active,.sBtn:hover{background:var(--primary);color:#fff;border-color:var(--pdark);}
+.day-row{display:flex;align-items:center;gap:.8rem;}
+.day-row label{color:var(--text);}
+#start-day{font-family:'VT323',monospace;font-size:1.3rem;width:70px;padding:.3rem .5rem;border:2px solid var(--border);background:var(--surface);color:var(--text);text-align:center;}
+.btn-primary{display:block;width:100%;padding:.7rem;background:var(--primary);color:#fff;border:2px solid var(--pdark);font-family:'VT323',monospace;font-size:1.4rem;cursor:pointer;margin-top:1rem;transition:background .2s;}
+.btn-primary:hover{background:var(--pdark);}
+.spoiler-note{font-size:.85rem;color:var(--muted);text-align:center;margin-top:.8rem;line-height:1.4;}
+
+/* ── APP SCREEN ── */
+#app{display:none;flex-direction:column;min-height:100vh;}
+#app.visible{display:flex;}
+
+/* Header */
+#hdr{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.2rem;background:var(--primary);color:#fff;position:sticky;top:0;z-index:100;}
+#hdr-left{display:flex;align-items:center;gap:.5rem;font-size:1.4rem;}
+#hdr-center{text-align:center;}
+#day-disp{font-size:1.8rem;line-height:1;}
+#yr-disp{font-size:.9rem;opacity:.8;}
+#hdr-right{display:flex;gap:.5rem;}
+.btn-sm{padding:.3rem .7rem;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'VT323',monospace;font-size:1rem;cursor:pointer;}
+.btn-sm:hover{background:rgba(255,255,255,.35);}
+
+/* Season progress */
+#prog-wrap{background:var(--pdark);padding:4px 1.2rem;}
+#prog-bar-outer{height:10px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;}
+#prog-bar-inner{height:100%;background:#fff;border-radius:3px;transition:width .4s;}
+#prog-dots{display:flex;justify-content:space-between;padding:3px 0;font-size:.7rem;color:rgba(255,255,255,.6);}
+#prog-dots span.fest{color:#ffe066;}
+
+/* Weather bar */
+#wx-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;background:var(--surface);border-bottom:2px solid var(--border);flex-wrap:wrap;}
+.wx-label{color:var(--muted);font-size:.95rem;}
+.wxBtn{padding:.3rem .8rem;border:2px solid var(--border);background:var(--card);cursor:pointer;font-family:'VT323',monospace;font-size:1.1rem;transition:all .15s;}
+.wxBtn.active,.wxBtn:hover{background:var(--primary);color:#fff;border-color:var(--pdark);}
+
+/* Main layout */
+#main{display:grid;grid-template-columns:1fr 280px;gap:1rem;padding:1rem 1.2rem;flex:1;align-items:start;}
+@media(max-width:700px){#main{grid-template-columns:1fr;}#sidebar{order:2;}}
+
+/* Day panel */
+#day-panel{display:flex;flex-direction:column;gap:.8rem;}
+
+/* Banners */
+.banner{padding:.7rem 1rem;border-left:4px solid;font-size:1rem;line-height:1.4;}
+.banner-title{font-size:1.2rem;font-weight:bold;margin-bottom:.2rem;}
+.banner-event{background:#fff9e0;border-color:#f5c842;color:#5a3e00;}
+.banner-harvest{background:#e8f5e0;border-color:#5d8a4d;color:#1a4a0a;}
+.banner-hint{background:#e8eeff;border-color:#4055b8;color:#0a1a5a;}
+.banner-storm{background:#fff0e0;border-color:#c46a1e;color:#5a2000;}
+.banner-rain{background:#e0f0ff;border-color:#2563a8;color:#001a5a;}
+
+/* Day title */
+.day-title-area{padding:.5rem 0;}
+#day-title{color:var(--primary);}
+#day-phase{color:var(--muted);font-size:.95rem;margin-top:.1rem;}
+
+/* Task sections */
+.task-section{background:var(--card);border:2px solid var(--border);padding:.8rem 1rem;}
+.section-hdr{padding:.3rem 0 .5rem;margin-bottom:.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.4rem;}
+.section-hdr.ess{color:#5d1a00;}
+.section-hdr.pri{color:#1a3d6a;}
+.section-hdr.opt{color:#3a6a1a;}
+.section-hdr.rain{color:#1a3a6a;}
+.task-item{display:flex;align-items:flex-start;gap:.6rem;padding:.35rem 0;border-bottom:1px dashed rgba(139,107,74,.2);cursor:pointer;user-select:none;}
+.task-item:last-child{border-bottom:none;}
+.task-item input[type=checkbox]{margin-top:4px;width:16px;height:16px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;}
+.task-item label{cursor:pointer;line-height:1.3;}
+.task-item.done label{text-decoration:line-through;opacity:.55;}
+
+/* Tip box */
+#tip-box{background:var(--surface);border:2px dashed var(--border);padding:.7rem 1rem;font-size:.95rem;color:var(--text);line-height:1.4;}
+#tip-box span.icon{font-size:1.2rem;margin-right:.4rem;}
+
+/* Nav buttons */
+.day-nav{display:flex;gap:.8rem;justify-content:space-between;margin-top:.4rem;}
+.btn-nav{flex:1;padding:.6rem 1rem;border:2px solid var(--border);background:var(--card);font-family:'VT323',monospace;font-size:1.2rem;cursor:pointer;transition:all .15s;}
+.btn-nav:hover:not(:disabled){background:var(--primary);color:#fff;border-color:var(--pdark);}
+.btn-nav:disabled{opacity:.4;cursor:not-allowed;}
+.btn-nav.next-day{background:var(--primary);color:#fff;border-color:var(--pdark);}
+.btn-nav.next-day:hover{background:var(--pdark);}
+
+/* Sidebar */
+#sidebar{display:flex;flex-direction:column;gap:.8rem;}
+.sb-section{background:var(--card);border:2px solid var(--border);padding:.8rem 1rem;}
+.sb-section h3{color:var(--primary);border-bottom:1px solid var(--border);padding-bottom:.4rem;margin-bottom:.6rem;}
+
+/* Milestones */
+.ms-item{display:flex;align-items:flex-start;gap:.5rem;padding:.3rem 0;font-size:.95rem;border-bottom:1px dashed rgba(139,107,74,.2);cursor:pointer;user-select:none;}
+.ms-item:last-child{border-bottom:none;}
+.ms-item input[type=checkbox]{margin-top:3px;width:15px;height:15px;accent-color:var(--accent);flex-shrink:0;}
+.ms-item label{cursor:pointer;line-height:1.3;}
+.ms-item.done label{text-decoration:line-through;opacity:.5;}
+
+/* Calendar */
+#cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:.4rem;}
+.cal-day{width:100%;aspect-ratio:1;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;cursor:pointer;position:relative;background:var(--surface);transition:background .15s;}
+.cal-day.past{background:rgba(93,138,77,.12);}
+.cal-day.current{background:var(--primary);color:#fff;border-color:var(--pdark);font-weight:bold;}
+.cal-day.fest::after{content:'★';position:absolute;top:-1px;right:0;font-size:.55rem;color:#f5c842;}
+.cal-day.night-fest::after{content:'🌙';position:absolute;top:-2px;right:0;font-size:.55rem;}
+
+/* Energy guide */
+.egy-guide{font-size:.9rem;line-height:1.7;color:var(--text);}
+.egy-note{color:var(--muted);}
+
+/* Scrollable task sections */
+#tasks-container{display:flex;flex-direction:column;gap:.5rem;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SETUP SCREEN ══════════════ -->
+<div id="setup">
+  <div class="setup-card">
+    <h1>🌱 Stardew Valley<br>Year 1 Guide</h1>
+    <p class="setup-tagline">Your spoiler-safe daily planner for a great first year!</p>
+
+    <div class="form-group">
+      <label>Which season are you in?</label>
+      <div class="season-row">
+        <button class="sBtn active" data-s="spring">🌱 Spring</button>
+        <button class="sBtn" data-s="summer">☀️ Summer</button>
+        <button class="sBtn" data-s="fall">🍂 Fall</button>
+        <button class="sBtn" data-s="winter">❄️ Winter</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>What day are you starting on?</label>
+      <div class="day-row">
+        <label>Day <input type="number" id="start-day" min="1" max="28" value="1"></label>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="start-btn">Start Your Adventure! →</button>
+    <p class="spoiler-note">Only today's plan is shown — no peeking ahead!<br>Each day unlocks as you play.</p>
+  </div>
+</div>
+
+<!-- ══════════════ APP SCREEN ══════════════ -->
+<div id="app">
+
+  <header id="hdr">
+    <div id="hdr-left">
+      <span id="season-icon">🌱</span>
+      <span id="season-name">Spring</span>
+    </div>
+    <div id="hdr-center">
+      <div id="day-disp">Day 1</div>
+      <div id="yr-disp">Year 1</div>
+    </div>
+    <div id="hdr-right">
+      <button class="btn-sm" id="jump-btn">↷ Jump</button>
+      <button class="btn-sm" id="reset-btn">↺ Reset</button>
+    </div>
+  </header>
+
+  <div id="prog-wrap">
+    <div id="prog-bar-outer"><div id="prog-bar-inner"></div></div>
+    <div id="prog-dots"></div>
+  </div>
+
+  <div id="wx-bar">
+    <span class="wx-label">Today's weather:</span>
+    <button class="wxBtn active" data-wx="sunny">☀️ Sunny</button>
+    <button class="wxBtn" data-wx="rainy">🌧️ Rainy</button>
+    <button class="wxBtn" data-wx="stormy">⛈️ Stormy</button>
+    <button class="wxBtn" data-wx="snowy">🌨️ Snowy</button>
+  </div>
+
+  <main id="main">
+    <div id="day-panel">
+      <div id="event-banner"   class="banner banner-event"   hidden></div>
+      <div id="harvest-banner" class="banner banner-harvest" hidden></div>
+      <div id="hint-banner"    class="banner banner-hint"    hidden></div>
+      <div id="wx-banner"      class="banner"                hidden></div>
+
+      <div class="day-title-area">
+        <h2 id="day-title"></h2>
+        <div id="day-phase"></div>
+      </div>
+
+      <div id="tasks-container">
+        <div class="task-section" id="sec-ess">
+          <div class="section-hdr ess">⭐ Essential</div>
+          <div id="tl-ess"></div>
+        </div>
+        <div class="task-section" id="sec-pri">
+          <div class="section-hdr pri">💪 Priority</div>
+          <div id="tl-pri"></div>
+        </div>
+        <div class="task-section" id="sec-opt">
+          <div class="section-hdr opt">✨ Optional</div>
+          <div id="tl-opt"></div>
+        </div>
+        <div class="task-section" id="sec-rain" style="display:none">
+          <div class="section-hdr rain">🌧️ Rainy Day Bonus</div>
+          <div id="tl-rain"></div>
+        </div>
+      </div>
+
+      <div id="tip-box" style="display:none">
+        <span class="icon">💡</span><span id="tip-txt"></span>
+      </div>
+
+      <div class="day-nav">
+        <button class="btn-nav" id="prev-btn" disabled>← Prev Day</button>
+        <button class="btn-nav next-day" id="next-btn">Next Day →</button>
+      </div>
+    </div>
+
+    <aside id="sidebar">
+      <div class="sb-section">
+        <h3>📋 Season Milestones</h3>
+        <div id="ms-list"></div>
+      </div>
+      <div class="sb-section">
+        <h3>📅 Season Calendar</h3>
+        <div id="cal-grid"></div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.4rem;">★ = Festival day</div>
+      </div>
+      <div class="sb-section">
+        <h3>⚡ Energy Guide</h3>
+        <div class="egy-guide">
+          <div>🚿 Water 1 crop ≈ 2 energy</div>
+          <div>⛏️ Mine 1 rock ≈ 2 energy</div>
+          <div>🌾 Harvest 1 crop ≈ 2 energy</div>
+          <div>🎣 Fish 1 cast ≈ 8 energy</div>
+          <div>⚔️ Fight enemy ≈ 4–10 energy</div>
+          <div class="egy-note">💫 Base energy: 270</div>
+          <div class="egy-note">🍄 Eat food to restore energy</div>
+          <div class="egy-note">🌧️ Rain skips watering → more energy!</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA — ALL 112 DAYS
+// e=essential, p=priority, o=optional, r=rain bonus
+// har=harvest msg, ev={n,h}=festival, hint=upcoming
+// ══════════════════════════════════════════════════
+
+const D = {
+spring:[
+// Day 1
+{t:"Welcome to Stardew Valley!",ph:"Getting Started",
+ e:["Plant all 15 Parsnip seeds in prepared soil","Water the seeds","Check the TV — weather channel + tips channel both have useful info"],
+ p:["Walk to Pelican Town and introduce yourself to Pierre at the General Store","Look for the old building in the north part of town and peek inside"],
+ o:["Forage along the paths between your farm and town","Meet 1–2 more neighbors before 10pm"],
+ r:["Skip watering — rain does it for you!","Use the saved energy to explore town more thoroughly today"],
+ tip:"Save your energy! Don't exhaust yourself on Day 1. You have a whole year ahead — pace yourself.",
+ har:null,ev:null,hint:null},
+
+// Day 2
+{t:"Settling Into Farm Life",ph:"Getting Started",
+ e:["Water your parsnip seeds"],
+ p:["Visit Pierre's General Store (closes 5pm, closed Wednesdays)","If budget allows: buy a few Potato seeds (80g each) — great early profit"],
+ o:["Walk south to find the beach and introduce yourself to Willy","Forage along roads and forest edges — there are free items out there"],
+ r:["No watering needed today!","Great day to spend extra time in town and meet more people"],
+ tip:"Potato seeds (80g) give stronger profit per seed than Parsnips. Even 2–3 potatoes planted now will pay off.",
+ har:null,ev:null,hint:null},
+
+// Day 3
+{t:"Exploring Your Surroundings",ph:"Getting Started",
+ e:["Water crops"],
+ p:["Explore the mountain path north of town — there are interesting things up there","Check your mailbox — you may have a letter with something useful"],
+ o:["Try fishing at the river south of town or the beach","Meet a few more villagers — say hi to Haley, Emily, or Alex"],
+ r:["Skip watering — use the energy to cover more ground","Visit the saloon in the evening for social opportunities"],
+ tip:"Forageable items are scattered everywhere — along paths, in the forest, on the beach. Grab everything you can and keep or gift them!",
+ har:null,ev:null,hint:null},
+
+// Day 4
+{t:"The Mines Await",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Head to the mines northeast of Pelican Town — it's time to explore!","Bring food with you to restore energy while mining"],
+ o:["Chat with Clint the Blacksmith near the mines — he can upgrade tools","Collect stone, ore, and any gems you find — it all has value"],
+ r:["Rain = extra energy! Go deeper in the mines today","No watering — spend the full day underground"],
+ tip:"Check your parsnips tomorrow — they should be ready to harvest if you planted them on Day 1!",
+ har:null,ev:null,hint:null},
+
+// Day 5
+{t:"First Harvest!",ph:"Farm & Mine",
+ e:["HARVEST your Parsnips — they're ready!","Water any remaining or newly planted crops"],
+ p:["Sell your harvest at Pierre's (immediate payment) or ship them (paid next morning)","Reinvest in more seeds — parsnips again or potatoes for bigger returns"],
+ o:["Head to the mines with your harvest profits","Visit Clint to learn about tool upgrades — you'll want to upgrade soon"],
+ r:["No watering after replanting!","Spend full day mining or in town with your new profits"],
+ tip:"Shipping bin is convenient but pays the NEXT morning. Pierre's shop pays immediately — useful if you need gold today.",
+ har:"🌾 Parsnips ready! (if planted Day 1)",ev:null,hint:null},
+
+// Day 6
+{t:"Building Momentum",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Continue mining — every ore counts toward tool upgrades","Forage anything you find along the way — it's free income"],
+ o:["Give a foraged item to a villager — they'll remember the kindness!","Try fishing at the mountain lake for a change of pace"],
+ r:["No watering — bonus energy!","Push deeper into the mines today than you did last time"],
+ tip:"Gifting villagers is the fastest way to build friendships. Check the calendar in town for upcoming birthdays!",
+ har:null,ev:null,hint:null},
+
+// Day 7
+{t:"One Week In",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Mine for copper ore — you need 5 copper bars to upgrade your first tool","If you have 20 copper ore and 25 stone, craft a furnace to start smelting"],
+ o:["Check the Traveling Cart south of your farm (appears Fridays and Sundays)","Socialize with townspeople in the afternoon"],
+ r:["No watering — mine harder today!","TV tonight: if tomorrow shows rain, consider leaving watering can with Clint after watering this evening"],
+ tip:"Fridays & Sundays: a Traveling Merchant sets up in Cindersap Forest south of your farm. She sells rare and hard-to-find items!",
+ har:null,ev:null,hint:null},
+
+// Day 8
+{t:"Copper Dreams",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Smelt copper ore into bars using your furnace","If you have 5 copper bars + 2,000g, bring your watering can to Clint for an upgrade — time it around rain!"],
+ o:["Keep mining for more resources","Talk to Clint about what upgrades are possible and what they cost"],
+ r:["No watering needed — PERFECT day to drop off your watering can for an upgrade!","The 2 days without your can won't matter if it's raining"],
+ tip:"Tool upgrade strategy: water all crops in the morning → give watering can to Clint → it's ready in 2 days. Time it around forecasted rain days!",
+ har:"🥔 Potatoes ready! (if planted Day 2)",ev:null,hint:null},
+
+// Day 9
+{t:"Mid-Spring Progress",ph:"Farm & Mine",
+ e:["Water crops (or pick up upgraded watering can from Clint if you left it 2 days ago!)"],
+ p:["Continue mining — push for deeper floors, there are better ores down below","Sell resources and crops to fund more upgrades"],
+ o:["Fish, socialize, or explore new areas of the valley","Check out the library/museum in town if you have any minerals or artifacts"],
+ r:["No watering — mine or socialize!","Great day to push deep underground"],
+ tip:"Keep exploring the mines — new resources and surprises appear at different depth levels. The deeper you go, the better the rewards!",
+ har:null,ev:null,hint:null},
+
+// Day 10
+{t:"Something's Stirring in Town",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Mine and farm as usual","Check the in-game calendar on the notice board in town — look for upcoming events marked on it"],
+ o:["Stock up on supplies if you need anything before upcoming busy days","Continue building friendships — give gifts to a couple people"],
+ r:["No watering — extra time for mining or town!"],
+ tip:"The town notice board calendar shows upcoming events with little icons. Check it to plan ahead!",
+ har:null,ev:null,
+ hint:"Something special is happening in Pelican Town in a few days... take a look at the town calendar!"},
+
+// Day 11
+{t:"Almost Time",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Mine and farm as usual","Buy any supplies you need from Pierre's or Clint's — shops close on festival days!"],
+ o:["Socialize and give gifts to build friendships"],
+ r:["No watering — keep working!"],
+ tip:"On festival days, all shops and businesses close. Buy seeds, tools, or supplies BEFORE a festival!",
+ har:null,ev:null,
+ hint:"Town event in 2 days! The whole valley gathers. Stock up on anything you need — shops will be closed."},
+
+// Day 12
+{t:"Festival Eve",ph:"Farm & Mine",
+ e:["Water crops","Buy anything you need from Pierre or Clint today — they close tomorrow!"],
+ p:["Mine until evening — save some energy for the festival tomorrow","Think about how much gold you can bring to tomorrow's event"],
+ o:["Give last-minute gifts, socialize"],
+ r:["No watering!","More time to prep — make sure you're ready for tomorrow"],
+ tip:"You CAN do morning farm chores before the festival starts at 9am. Water first, THEN head to town!",
+ har:null,ev:null,
+ hint:"The Egg Festival is TOMORROW in the town square at 9am! Bring as much gold as you can — there's something VERY worth buying."},
+
+// Day 13 — EGG FESTIVAL
+{t:"🐣 Egg Festival",ph:"Festival Day",
+ e:["Water crops BEFORE 9am","Head to the town square by 9am","Buy Strawberry Seeds from Pierre at the festival — as many as you can afford!"],
+ p:["Participate in the egg hunt mini-game","Talk to all the festival attendees"],
+ o:["Enjoy the spring festivities!"],
+ r:["No watering — focus all your gold on Strawberry Seeds!"],
+ tip:"Buy as many Strawberry Seeds (100g each) as your wallet allows. They produce 2+ harvests before season end — this is the single best Spring investment!",
+ har:null,
+ ev:{n:"🐣 Egg Festival — Town Square, 9am",h:"CRITICAL: Strawberry Seeds (100g each) are ONLY sold today by Pierre! Buy as many as possible. With 2 harvests before season end, each seed earns back 140–260g profit."},
+ hint:null},
+
+// Day 14
+{t:"Plant Strawberries — Right Now!",ph:"Farm & Mine",
+ e:["Plant ALL your Strawberry Seeds immediately!","Water the new plants"],
+ p:["Get back to mining — Summer is coming and you need resources","Check on your other crops"],
+ o:["Socialize, fish, or forage","Start accumulating gold for Summer crop investments"],
+ r:["No watering needed after planting!","Use all that saved energy for the mines"],
+ tip:"Planted today → first harvest Day 22, second harvest Day 26. Planted yesterday evening → first harvest Day 21!",
+ har:null,ev:null,hint:null},
+
+// Day 15
+{t:"Back to Business",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Mine for iron ore — it's found on deeper floors than copper","Sell surplus crops and resources"],
+ o:["Build relationships, fish, or forage","Craft any useful items you've unlocked"],
+ r:["No watering — bonus energy for mining!"],
+ tip:"Iron ore appears on deeper mine floors than copper. Keep descending! Iron tools are a significant upgrade.",
+ har:null,ev:null,hint:null},
+
+// Day 16
+{t:"Halfway Through Spring",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Continue mining — iron ore is your next target","Check your gold total — are you building toward Summer seed investments?"],
+ o:["Think about artisan production: do you have a furnace? A keg or preserves jar is next to aim for","Socializing in the afternoons helps balance your day"],
+ r:["Extra energy — mine deeper today!"],
+ tip:"You're halfway through Spring! How are your skills coming along? Each level in Farming, Mining, etc. brings new recipes and bonuses.",
+ har:null,ev:null,hint:null},
+
+// Day 17
+{t:"Spring Mining Sprint",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Push as deep in the mines as you can today","Collect stone, ore, and any gems you find"],
+ o:["Give gifts to townspeople","Fish at the mountain lake"],
+ r:["No watering — prioritize the mines today!"],
+ tip:"Geodes found in the mines can be cracked open by Clint. Their contents can be minerals for the museum, gems to sell, or useful crafting materials.",
+ har:null,ev:null,hint:null},
+
+// Day 18
+{t:"Connections in the Valley",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Take a social day — visit 3–4 villagers and chat or bring gifts","Check your mailbox for any new letters"],
+ o:["Mine or fish between social visits","Donate minerals to the museum for rewards"],
+ r:["Perfect rainy social day — visit the shops and saloon!"],
+ tip:"Each villager has preferred gifts. Pay attention to what they mention in conversation — they drop hints about what they like!",
+ har:null,ev:null,hint:null},
+
+// Day 19
+{t:"Resources and Relationships",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Mine and sell resources","Visit any buildings in town you haven't fully explored yet"],
+ o:["Artisan production, fishing, or more socializing"],
+ r:["No watering — use all that energy strategically!"],
+ tip:"Keep an eye on the community center when you visit. There's more to discover there as you collect different items throughout the year.",
+ har:null,ev:null,hint:null},
+
+// Day 20
+{t:"Final 8 Days of Spring",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Only plant crops that will be ready BEFORE Day 28 — most won't make it","Mine, fish, or socialize for main activities"],
+ o:["Clear land and prepare your farm layout for Summer planting"],
+ r:["No watering — prep your farm for Summer!"],
+ tip:"Don't plant anything with more than an 8-day growth time — it won't harvest before the season ends and will wither!",
+ har:null,ev:null,hint:null},
+
+// Day 21
+{t:"Strawberry Season!",ph:"Farm & Mine",
+ e:["Water crops","HARVEST Strawberries if they're ready!"],
+ p:["Sell or ship your strawberries","Mine and farm as usual"],
+ o:["Forage Spring items — they won't be available much longer!","Socialize"],
+ r:["No watering — harvest and sell!"],
+ tip:"Spring forageables disappear at season end — grab any Daffodils, Dandelions, Leeks, and Wild Horseradish you haven't collected yet!",
+ har:"🍓 Strawberries ready! (if planted Day 13)",ev:null,
+ hint:"A springtime dance is coming in 3 days... somewhere in the forest south of your farm..."},
+
+// Day 22
+{t:"Dancing Days Ahead",ph:"Farm & Mine",
+ e:["Water crops","Harvest any ready Strawberries!"],
+ p:["Sell or ship strawberries","Mine and socialize"],
+ o:["Grab any remaining Spring forageables before they're gone"],
+ r:["No watering — harvest and sell freely!"],
+ tip:"You can harvest crops in the MORNING before heading to any festival — always do your farm chores first!",
+ har:"🍓 Strawberries ready! (if planted Day 14)",ev:null,
+ hint:"The Flower Dance is in 2 days! It happens in Cindersap Forest — the area south of your farm."},
+
+// Day 23
+{t:"Dance Eve",ph:"Farm & Mine",
+ e:["Water crops"],
+ p:["Mine and farm — last normal day before the festival","Sell any excess inventory"],
+ o:["Final Spring social calls"],
+ r:["No watering — enjoy the final spring sprint!"],
+ tip:"The Flower Dance starts at 9am — do your morning farm chores first, then head south into Cindersap Forest.",
+ har:null,ev:null,
+ hint:"The Flower Dance is TOMORROW morning in Cindersap Forest! Head south from your farm."},
+
+// Day 24 — FLOWER DANCE
+{t:"🌸 Flower Dance",ph:"Festival Day",
+ e:["Water crops before 9am","Head to Cindersap Forest (south of your farm) at 9am"],
+ p:["Ask someone to dance — the response may surprise you!","Talk to all the festival attendees"],
+ o:["Take in the beautiful Spring atmosphere!"],
+ r:["No watering — head straight to the forest!"],
+ tip:"Your experience at this dance may differ from what you expect — but it's something to look forward to in future years too!",
+ har:null,
+ ev:{n:"🌸 Flower Dance — Cindersap Forest, 9am",h:"Head south through your farm into Cindersap Forest. The whole town gathers here for a spring celebration! Ask a villager to dance — their answer may depend on how well you know them."},
+ hint:null},
+
+// Day 25
+{t:"End of Season Sprint",ph:"Season Wrap-Up",
+ e:["Water crops","Harvest any mature crops!"],
+ p:["Stop planting new crops — only 3 days left!","Sell what you have and bank gold for Summer"],
+ o:["Forage last Spring items (Daffodil, Dandelion, Leek, Wild Horseradish)","Take a look at what Pierre has for Summer seeds"],
+ r:["No watering — sell and prep for Summer!"],
+ tip:"Start planning your Summer crops now! Blueberries are the #1 Summer money-maker — plan to buy lots of them.",
+ har:"🍓 Strawberries ready! (if planted Day 13 or 17)",ev:null,hint:null},
+
+// Day 26
+{t:"Final Days of Spring",ph:"Season Wrap-Up",
+ e:["Water crops (almost done!)","Harvest any mature crops"],
+ p:["Sell crops and resources","Consider buying Summer seeds from Pierre now if you see what you want"],
+ o:["Last social visits of Spring","Final mining push for Spring resources"],
+ r:["No watering — wrap up Spring business!"],
+ tip:"Pierre stocks Summer seeds as Spring ends. Buy Blueberry Seeds ASAP — plant them Summer Day 1 for maximum harvests!",
+ har:null,ev:null,hint:null},
+
+// Day 27
+{t:"Last Full Day of Spring",ph:"Season Wrap-Up",
+ e:["Harvest EVERY crop that's ready today","Water only crops you'll harvest tomorrow morning"],
+ p:["Buy Summer seeds from Pierre if you haven't (Blueberry Seeds are priority!)","Don't plant anything new — it won't survive the season change"],
+ o:["Final social calls, any last mining"],
+ r:["No watering — focus on harvesting and selling!"],
+ tip:"Buy Blueberry Seeds tonight or first thing tomorrow — they're the star of Summer. Plant them Summer Day 1!",
+ har:"🍓 Final Strawberry harvest! (Day 13/17/21 plantings)",ev:null,hint:null},
+
+// Day 28
+{t:"End of Spring — Hello Summer!",ph:"Season Wrap-Up",
+ e:["HARVEST EVERY SINGLE CROP this morning — they wither tonight!","Clear and till your fields for Summer planting"],
+ p:["Buy Summer seeds from Pierre's immediately if you haven't","Sell ALL Spring crops before the day ends"],
+ o:["Review your Spring progress — how much have you grown as a farmer?"],
+ r:["No watering needed for the final day!"],
+ tip:"Summer Day 1: plant EVERYTHING immediately. Blueberries take 13 days to first harvest — every day of growth counts!",
+ har:"🌾 Final harvest — clear every crop!",ev:null,hint:null},
+],
+
+// ══════════════ SUMMER ══════════════
+summer:[
+// Day 1
+{t:"☀️ Summer Begins!",ph:"New Season",
+ e:["Buy Summer seeds from Pierre first thing if you haven't yet!","Plant ALL Summer crops right now — every day matters","Water the new plants"],
+ p:["Priority: Blueberry Seeds (80g, triple harvest!), Starfruit (200g, high value)","Also great: Hops (60g), Wheat (10g, 4 days), Radish (40g, 6 days)"],
+ o:["Explore for new Summer forageables — the valley changes with the season!","Chat with any new summer faces in town"],
+ r:["No watering needed — spend the morning buying seeds and planning!","Plant everything then enjoy bonus energy for the rest of the day"],
+ tip:"Blueberries are Summer's star crop — they produce multiple berries per harvest AND regrow every 4 days. Buy as many as your gold allows!",
+ har:null,ev:null,hint:null},
+
+// Day 2
+{t:"Summer Farming Begins",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Head to the mines — Summer is a great mining season","Sell anything leftover from Spring"],
+ o:["Try fishing at the beach — Tuna and Pufferfish are in season!","Explore for Summer forageables: Fiddlehead Fern, Spice Berry, Red Mushroom, Sweet Pea"],
+ r:["No watering — bonus energy for the mines!"],
+ tip:"Summer forageables: Fiddlehead Fern (valuable!), Spice Berry, Red Mushroom, Sweet Pea, Grape. Check everywhere — forest, beach, and mountain paths!",
+ har:null,ev:null,hint:null},
+
+// Day 3
+{t:"Summer Routine",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Continue mining for resources","Check if you should upgrade more tools at Clint's"],
+ o:["Fish, forage, or socialize","Build artisan goods — do you have a Keg or Preserves Jar yet?"],
+ r:["No watering — great mining day!"],
+ tip:"A Preserves Jar (50 wood, 40 stone, 8 coal) turns crops into Pickles or Jam, roughly doubling their sale price. Worth crafting!",
+ har:null,ev:null,hint:null},
+
+// Day 4
+{t:"Finding a Summer Rhythm",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Continue mining — push deeper than Spring","Sell resources and crops"],
+ o:["Build artisan infrastructure if you have materials","Socialize and build friendships"],
+ r:["Extra energy — mine harder and deeper!"],
+ tip:"Consider building a chest near your crops to store seeds and tools — saves a lot of walking time every day!",
+ har:null,ev:null,hint:null},
+
+// Day 5
+{t:"Summer Week 2 Begins",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine, farm, and sell as usual","Check your skill levels — any profession choices coming up at level 5?"],
+ o:["Fish for income and skill leveling","Socialize"],
+ r:["No watering — make it count!"],
+ tip:"At skill level 5 (Farming, Mining, Fishing, etc.) you'll choose a profession that affects your long-term earnings. Think about your playstyle!",
+ har:null,ev:null,hint:null},
+
+// Day 6
+{t:"Building Summer Wealth",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine for iron and gold ore — they're on deeper floors","Sell resources regularly to fund farm improvements"],
+ o:["Give gifts to townspeople","Explore new areas of the valley you haven't visited"],
+ r:["Bonus energy — deeper mines today!"],
+ tip:"The Traveling Merchant appears Fridays and Sundays south of your farm. She sometimes has seeds and items unavailable anywhere else!",
+ har:null,ev:null,hint:null},
+
+// Day 7
+{t:"Social Summer Day",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Visit several townspeople — Summer is a great social season!","Mine in the mornings, socialize in the afternoons"],
+ o:["Fish or forage Summer items between visits"],
+ r:["Perfect day for indoor socializing in shops and the saloon!"],
+ tip:"You can give 2 gifts per person per week. Gift on different days to maximize friendship point gains!",
+ har:null,ev:null,hint:null},
+
+// Day 8
+{t:"Luau Week Begins",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine and farm as usual","Stock up on any supplies you need — big event coming soon!"],
+ o:["Build artisan goods, socialize"],
+ r:["No watering — great mining day!"],
+ tip:"For the upcoming town event, you'll want to bring a high-quality item. Think about what you have that's gold-star quality!",
+ har:null,ev:null,
+ hint:"A big town gathering is happening in 3 days at the beach! Start setting aside a high-quality item to contribute..."},
+
+// Day 9
+{t:"Almost Luau Time!",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine and farm as normal","Set aside a high-quality crop, fish, or forage item for tomorrow's event"],
+ o:["Socialize, fish, forage"],
+ r:["No watering — bonus energy!"],
+ tip:"Gold-star items, aged artisan goods, or quality fish make excellent contributions to the communal pot. The quality really matters!",
+ har:null,ev:null,
+ hint:"The Luau is in 2 days at the beach! Bring your BEST item to add to the communal soup — quality impresses the Governor."},
+
+// Day 10
+{t:"Luau Eve",ph:"Summer Farm",
+ e:["Water crops","Pick your best item to bring to the Luau tomorrow — gold-star quality is ideal!"],
+ p:["Mine and farm as usual","Make sure you remember which item you're bringing"],
+ o:["Last preparations, socialize"],
+ r:["No watering!"],
+ tip:"Your Luau contribution is evaluated by the Governor. Gold-star crops or quality fish will impress. Forage items work too but crops score higher!",
+ har:null,ev:null,
+ hint:"The LUAU is TOMORROW at 9am on the beach! Bring your best item — higher quality = better result!"},
+
+// Day 11 — LUAU
+{t:"🌺 Luau!",ph:"Festival Day",
+ e:["Water crops before 9am","Head to the beach by 9am","Add your high-quality item to the communal soup pot"],
+ p:["Talk to the Governor and all the festival attendees","Enjoy the beach atmosphere!"],
+ o:["Explore the beach area after chatting with everyone"],
+ r:["No watering — head straight to the beach!"],
+ tip:"The beach is at the south end of Pelican Town. Head all the way south and you'll find it! The Luau is a great chance to see most of the town in one place.",
+ har:null,
+ ev:{n:"🌺 Luau — Beach, 9am",h:"Add a high-quality item to the communal soup pot! The better your contribution, the more the whole town (including the Governor) is impressed. Gold-star crops, quality fish, or aged artisan goods work great."},
+ hint:null},
+
+// Day 12
+{t:"Post-Luau Recovery",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine and farm — full energy after the festival day!","Sell any resources you've been holding"],
+ o:["Fish, socialize, or forage Summer items"],
+ r:["No watering — great post-festival mining day!"],
+ tip:"How are your skill levels coming? Farming, Mining, Foraging, Fishing, and Combat all level up from different activities. Try to diversify!",
+ har:null,ev:null,hint:null},
+
+// Day 13
+{t:"Blueberry Check",ph:"Summer Farm",
+ e:["Water crops","HARVEST Blueberries if they're ready!"],
+ p:["Mine for iron and gold ore","Sell or process blueberries — Blueberry Jam in a Preserves Jar sells for much more!"],
+ o:["Build artisan production, socialize"],
+ r:["No watering — harvest and mine!"],
+ tip:"Blueberries produce multiple berries at once! They regrow every 4 days. Keep them going all season — that's a lot of harvests!",
+ har:"🫐 Blueberries ready! (if planted Summer Day 1)",ev:null,hint:null},
+
+// Day 14
+{t:"Harvest and Reinvest",ph:"Summer Farm",
+ e:["Water crops","Harvest any ready produce"],
+ p:["Sell crops or process them for higher value","Continue mining and farming"],
+ o:["Artisan goods production","Socialize with townspeople"],
+ r:["No watering — harvest and sell!"],
+ tip:"Blueberry Jam (Preserves Jar) or Blueberry Wine (Keg) both sell for significantly more than raw blueberries. Worth the processing time!",
+ har:null,ev:null,hint:null},
+
+// Day 15
+{t:"Halfway Through Summer",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine — push for deeper floors!","Sell crops and resources"],
+ o:["Build more farm infrastructure if you have resources","Consider your Fall crop plan — Cranberries are key!"],
+ r:["No watering — bonus energy for mining!"],
+ tip:"You're halfway through Summer! Check your milestones. Have you upgraded your backpack (2,000g at Pierre's)? It makes a huge difference!",
+ har:null,ev:null,hint:null},
+
+// Day 16
+{t:"Summer Deep Dive",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine as deep as possible today","Sell resources for farm improvements"],
+ o:["Socialize, fish, or explore new parts of the valley","Check if there are any unique things you haven't discovered yet"],
+ r:["No watering — prioritize the mines!"],
+ tip:"The backpack upgrade at Pierre's (2,000g) gives you 12 more inventory slots. If you haven't bought it yet, now's a great time!",
+ har:null,ev:null,hint:null},
+
+// Day 17
+{t:"Artisan Exploration",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Consider your artisan setup: Kegs, Preserves Jars, and Bee Houses all multiply crop value","Mine and farm as usual"],
+ o:["Fish for museum collection items","Socialize"],
+ r:["No watering — craft and plan!"],
+ tip:"Bee Houses placed near flowers produce Honey, which sells for good money and can be turned into Mead in a Keg!",
+ har:"🫐 Blueberries ready! (Day 17 regrow cycle)",ev:null,hint:null},
+
+// Day 18
+{t:"Social Summer Week",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Make social rounds — gift 2 items to multiple villagers today","Mine and sell between visits"],
+ o:["Explore for Summer forageables you might have missed","Fish"],
+ r:["Perfect rainy social day — visit the shops and saloon!"],
+ tip:"Some villagers follow different schedules on different days. Sundays are often good for finding people who are usually hard to catch!",
+ har:null,ev:null,hint:null},
+
+// Day 19
+{t:"Late Summer Crops",ph:"Summer Farm",
+ e:["Water crops","Harvest any ready produce"],
+ p:["Only plant new crops if they'll mature before Day 28","Mine and sell"],
+ o:["Build relationships, fish, forage"],
+ r:["No watering — use wisely!"],
+ tip:"Blueberry regrow cycle: harvest every 4 days. Track your schedule to make sure you're not missing harvests!",
+ har:"🫐 Blueberries ready! (Day 19 regrow cycle)",ev:null,hint:null},
+
+// Day 20
+{t:"Summer Winding Down",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Start planning Fall crops mentally — Cranberries and Pumpkins are top picks!","Mine and sell"],
+ o:["Socialize, fish, forage"],
+ r:["No watering — mine or socialize!"],
+ tip:"Fall is coming! Pierre restocks Fall seeds. Cranberry Seeds are the Fall equivalent of Blueberries — prioritize buying them on Fall Day 1!",
+ har:null,ev:null,hint:null},
+
+// Day 21
+{t:"Final Summer Week",ph:"Summer Farm",
+ e:["Water crops","Harvest any mature crops"],
+ p:["Don't plant anything new with more than a 7-day grow time!","Mine and sell"],
+ o:["Forage remaining Summer items","Final artisan goods runs"],
+ r:["No watering — make the most of Summer!"],
+ tip:"Summer forageables (Fiddlehead Fern, Spice Berry, etc.) disappear at season end. Grab any you haven't collected for gifts or the museum!",
+ har:"🫐 Blueberries ready! (Day 21 regrow cycle)",ev:null,
+ hint:"Something magical and luminous is coming in 7 days... at the beach... after dark..."},
+
+// Day 22
+{t:"Rare Opportunities",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Check the Traveling Cart (if it's Friday or Sunday) for rare seeds or items","Mine and sell"],
+ o:["Fish, forage, socialize"],
+ r:["No watering — adventure awaits!"],
+ tip:"The Traveling Merchant sometimes sells rare seeds that can't be bought anywhere else. Check her cart every Friday and Sunday!",
+ har:null,ev:null,
+ hint:"The magical night event at the beach is coming in 6 days!"},
+
+// Day 23
+{t:"Final Push",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine for resources to bring into Fall","Sell everything you don't need"],
+ o:["Social visits, fishing, foraging"],
+ r:["No watering — last deep mining push!"],
+ tip:"How is your community center coming along? Visit and see what you can contribute from your Summer collection!",
+ har:null,ev:null,
+ hint:"5 more days until a beautiful event at the beach late at night..."},
+
+// Day 24
+{t:"Counting Down",ph:"Summer Farm",
+ e:["Water crops"],
+ p:["Mine and sell","Clear schedule thoughts — season is ending soon"],
+ o:["Final artisan goods, socializing"],
+ r:["No watering — bonus time!"],
+ tip:"Start planning your Fall farm layout — clear land now so you can plant everything the moment Fall arrives!",
+ har:null,ev:null,
+ hint:"4 more days until something glowing in the night sky at the beach..."},
+
+// Day 25
+{t:"Almost Season End",ph:"Season Wrap-Up",
+ e:["Water crops","Harvest any mature crops"],
+ p:["Mine and sell","Start clearing land for Fall planting"],
+ o:["Final Summer social visits"],
+ r:["No watering — harvest and prep!"],
+ tip:"Don't sell your very best quality crops — some may be useful for upcoming community events and gifting!",
+ har:"🫐 Final Blueberry harvest! (Day 25 regrow cycle)",ev:null,
+ hint:"The Dance of the Moonlight Jellies is in 3 nights! Something beautiful glows at the beach after dark..."},
+
+// Day 26
+{t:"End in Sight",ph:"Season Wrap-Up",
+ e:["Water crops","Harvest any mature crops"],
+ p:["Sell what you don't need","Buy Fall seeds from Pierre's — Cranberry Seeds are the priority!"],
+ o:["Final foraging, fishing"],
+ r:["No watering — sell and buy Fall seeds!"],
+ tip:"UNIQUE: The Day 28 night event is at 10pm — you can farm ALL DAY and still attend! It's the only evening festival.",
+ har:null,ev:null,
+ hint:"The Dance of the Moonlight Jellies is the day after tomorrow — at 10pm at the beach! You can farm all day first."},
+
+// Day 27
+{t:"Last Full Day of Summer",ph:"Season Wrap-Up",
+ e:["Harvest any mature crops","Water only crops you'll harvest tomorrow"],
+ p:["Buy Fall seeds if you haven't yet (Cranberry Seeds!)","Don't plant anything new"],
+ o:["Final social calls of Summer"],
+ r:["No watering — harvest and prepare!"],
+ tip:"Tonight's night event lets you farm ALL DAY first — just head to the beach after 10pm. Don't forget to harvest everything before the season ends!",
+ har:null,ev:null,
+ hint:"The Dance of the Moonlight Jellies is TONIGHT starting around 10pm — head to the beach after dark!"},
+
+// Day 28 — MOONLIGHT JELLIES (evening event!)
+{t:"Summer's Grand Finale",ph:"Festival Day (Evening)",
+ e:["Farm all day — HARVEST EVERY SINGLE CROP before season end!","Head to the beach after 10pm tonight for the festival"],
+ p:["HARVEST EVERYTHING — crops wither tonight","Sell all Summer crops","The night event is optional but beautiful — attend if you can"],
+ o:["Mine early, sell in the afternoon, festival in the evening"],
+ r:["No watering — full harvest and festival day!"],
+ tip:"UNIQUE: This festival is at 10pm — not 9am like most events! You can farm your entire day normally, then attend at night.",
+ har:"🌾 HARVEST EVERYTHING — final Summer day!",
+ ev:{n:"🌊 Dance of the Moonlight Jellies — Beach, ~10pm",h:"Unique evening festival! Unlike other festivals, this one DOESN'T close shops at 9am. Farm all day, then head to the beach after 10pm to watch the moonlight jellies drift by. Beautiful and unmissable!"},
+ hint:null},
+],
+
+// ══════════════ FALL ══════════════
+fall:[
+// Day 1
+{t:"🍂 Fall Arrives!",ph:"New Season",
+ e:["Buy Fall seeds from Pierre IMMEDIATELY — stock is limited!","Plant ALL Fall crops today — every day matters!","Water new plants"],
+ p:["Top priority seeds: Cranberry (240g, multi-harvest like Blueberries!), Pumpkin (100g, great value)","Also strong: Grape (60g, 3-day regrow), Amaranth (70g, 7 days), Yam (160g), Beet (20g, 6 days)"],
+ o:["Explore for new Fall forageables — Blackberry, Chanterelle, Common Mushroom, Hazelnut, Wild Plum, Ginger"],
+ r:["No watering needed — spend more time buying and planning!"],
+ tip:"Cranberries are Fall's Blueberries — multiple cranberries per harvest, regrow every 5 days. Buy as many as you can afford on Day 1!",
+ har:null,ev:null,hint:null},
+
+// Day 2
+{t:"Fall Routine",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine — Fall brings new discoveries in the mountain","Forage for the new Fall items (especially mushrooms in the forest!)"],
+ o:["Fish — Fall has some unique catches","Socialize"],
+ r:["No watering — great mining day!"],
+ tip:"Fall forageables: Wild Plum, Hazelnut, Blackberry, Chanterelle, Common Mushroom, Ginger. Check the forest floor carefully!",
+ har:null,ev:null,hint:null},
+
+// Day 3
+{t:"Mushroom Season",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Forage the forest for mushrooms — Common Mushroom and Chanterelle are valuable","Mine and sell resources"],
+ o:["Give Fall forage items as gifts — many villagers love mushrooms","Fish in Fall waterways"],
+ r:["No watering — forage and mine!"],
+ tip:"Common Mushrooms and Chanterelles are excellent for cooking, gifting, and selling. Collect as many as you can find each day!",
+ har:null,ev:null,hint:null},
+
+// Day 4
+{t:"Fall Week 2",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Continue mining","Sell resources and crops"],
+ o:["Socialize, fish, or forage"],
+ r:["No watering — mine deeper!"],
+ tip:"Fall is excellent for deep mining with no heavy farming demands later in the season. Push for new depth records!",
+ har:null,ev:null,hint:null},
+
+// Day 5
+{t:"First Fall Harvests Approaching",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine and farm as usual","Check crop growth — Cranberries should be ready in about 2 days!"],
+ o:["Build artisan goods, socialize"],
+ r:["No watering — bonus energy!"],
+ tip:"Beet is Clint's favorite gift, Yam is Demetrius's. Check the town calendar for villager birthdays to maximize gift timing!",
+ har:null,ev:null,hint:null},
+
+// Day 6
+{t:"First Fall Harvest!",ph:"Fall Farm",
+ e:["Water crops","HARVEST Cranberries — they're ready!"],
+ p:["Sell or process cranberries (Cranberry Sauce/Juice adds major value!)","Mine and continue farming"],
+ o:["Give a cranberry to a villager who likes them","Fish"],
+ r:["No watering — harvest and sell!"],
+ tip:"Cranberries regrow every 5 days! After this first harvest: Day 11, 16, 21, 26. That's 5 harvests total this season!",
+ har:"🫙 Cranberries ready! (if planted Fall Day 1)",ev:null,hint:null},
+
+// Day 7
+{t:"Fall Mining Push",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Push deep into the mines — Fall is your best mining season!","Sell mined resources for income"],
+ o:["Socialize, forage, fish"],
+ r:["No watering — mine hard today!"],
+ tip:"Amaranth (7 days) should be ready soon if you planted it Day 1. It sells well and makes a loved gift for several villagers!",
+ har:"🌾 Amaranth ready! (if planted Fall Day 1)",ev:null,hint:null},
+
+// Day 8
+{t:"Beet Bonus",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine, farm, and sell","Check the community center — Fall brings new contribution opportunities!"],
+ o:["Artisan goods, social visits"],
+ r:["No watering — productive day ahead!"],
+ tip:"Beets mature in just 6 days — fastest Fall crop! Sandy at the Oasis in the desert sells more if you've unlocked that area.",
+ har:"🟣 Beet ready! (if planted Fall Day 1 — only 6 days!)",ev:null,hint:null},
+
+// Day 9
+{t:"Yam Harvest",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine and farm","Sell and reinvest"],
+ o:["Forage Fall mushrooms","Visit new areas if you've been staying close to home"],
+ r:["No watering — bonus time!"],
+ tip:"Yam is Demetrius's favorite gift — if you're building friendship with him, save a few yams! Perfect for birthday gifting.",
+ har:"🍠 Yam ready! (if planted Fall Day 1)",ev:null,hint:null},
+
+// Day 10
+{t:"Grape Time",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine, farm, and sell","Give Fall forage gifts to townspeople to build friendship"],
+ o:["Build artisan goods, socialize"],
+ r:["No watering — mine deeper!"],
+ tip:"Track your Cranberry regrow schedule — they should be ready again tomorrow! Next harvest: Day 11.",
+ har:"🍇 Grapes ready! (if planted Fall Day 1 — 10 days)",ev:null,hint:null},
+
+// Day 11
+{t:"Cranberry Regrow!",ph:"Fall Farm",
+ e:["Water crops","HARVEST Cranberries — second harvest!"],
+ p:["Sell or process cranberries","Mine and farm"],
+ o:["Socialize, fish, forage"],
+ r:["No watering — harvest and sell easily!"],
+ tip:"Consider making Cranberry Sauce or Cranberry Juice — processed goods sell for MUCH more than raw cranberries!",
+ har:"🫙 Cranberries — 2nd harvest! (regrow cycle)",ev:null,hint:null},
+
+// Day 12
+{t:"Pumpkin Watch",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine and farm","Sell resources"],
+ o:["Artisan goods, social visits"],
+ r:["No watering — great mining day!"],
+ tip:"Pumpkins take 13 days — they should be ready around Day 14 if planted Day 1. Great for gold-star crops and the upcoming fair!",
+ har:null,ev:null,hint:null},
+
+// Day 13
+{t:"Fair Week Starts",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine and farm as usual","Start setting aside 9 of your BEST quality items for the Grange Display at the upcoming fair!"],
+ o:["Build a varied collection of items for the display — crops, artisan goods, minerals, cooked dishes","Socialize"],
+ r:["No watering — prep time!"],
+ tip:"Grange Display tips: higher quality = more points. Include items from different categories (crops, minerals, artisan, cooked) for bonus points!",
+ har:null,ev:null,
+ hint:"The Stardew Valley Fair is in 3 days! Start gathering 9 high-quality items for the Grange Display."},
+
+// Day 14
+{t:"Fair Prep",ph:"Fall Farm",
+ e:["Water crops","HARVEST Pumpkins if ready!"],
+ p:["Select 9 of your BEST items for the Fair's Grange Display","Continue farming and mining"],
+ o:["Last preparations for the Fair"],
+ r:["No watering — harvest and fair prep!"],
+ tip:"Pack your 9 display items in the top row of your inventory so you don't accidentally sell them before the Fair!",
+ har:"🎃 Pumpkins ready! (if planted Fall Day 1)",ev:null,
+ hint:"The Stardew Valley Fair is in 2 days in the town square! Make sure your 9 best items are ready for the Grange Display."},
+
+// Day 15
+{t:"Fair Eve",ph:"Fall Farm",
+ e:["Water crops","Put your 9 Fair items in your inventory so they're ready tomorrow"],
+ p:["Mine until evening","Save your energy for the festival"],
+ o:["Last social visits before Fair"],
+ r:["No watering — last prep day!"],
+ tip:"The Fair also has carnival games where you can earn Star Tokens. Some prizes from the Fair shop are hard to get elsewhere!",
+ har:null,ev:null,
+ hint:"The Stardew Valley Fair is TOMORROW at 9am in Pelican Town! Don't forget your 9 display items!"},
+
+// Day 16 — STARDEW VALLEY FAIR
+{t:"🎪 Stardew Valley Fair!",ph:"Festival Day",
+ e:["Water crops BEFORE 9am","Head to Pelican Town at 9am for the Fair","Set up your Grange Display with 9 high-quality items"],
+ p:["Compete in the fair activities","Talk to all the festival vendors and attendees"],
+ o:["Spend Star Tokens on prizes from the Fair shop!"],
+ r:["No watering — head straight to the Fair!"],
+ tip:"Use your Star Tokens wisely — check all the prizes before spending. Some Fair-exclusive items are very valuable!",
+ har:null,
+ ev:{n:"🎪 Stardew Valley Fair — Pelican Town, 9am",h:"Set up your Grange Display with 9 of your best items! Higher quality + more variety = more Star Tokens. Spend tokens at the Fair shop on farming equipment and special prizes. Compete in the slingshot and fishing games too!"},
+ hint:null},
+
+// Day 17
+{t:"Post-Fair Production",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Full day of farming — catch up after the festival!","Mine and sell resources"],
+ o:["Build artisan goods infrastructure","Socialize"],
+ r:["No watering — full productivity day!"],
+ tip:"Fall is winding down. What milestones do you still want to hit before Winter? Make a mental checklist!",
+ har:null,ev:null,hint:null},
+
+// Day 18
+{t:"Fall Harvest Cycle",ph:"Fall Farm",
+ e:["Water crops","Harvest any mature crops"],
+ p:["Sell crops and resources","Mine"],
+ o:["Forage Fall mushrooms and items","Socialize"],
+ r:["No watering — harvest and sell!"],
+ tip:"Grapes regrow every 3 days — keep them going! Grapes can be turned into Wine in a Keg for a huge value multiplier.",
+ har:"🫙 Cranberries — 3rd harvest! (Day 16 regrow)",ev:null,hint:null},
+
+// Day 19
+{t:"Final Push Phase",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Mine and farm","Only plant crops that will be ready before Day 28!"],
+ o:["Artisan goods, social visits"],
+ r:["No watering — bonus energy!"],
+ tip:"Eggplant (5 days initial, 5-day regrow) is still worth planting this week — and it's a loved gift for several villagers!",
+ har:null,ev:null,hint:null},
+
+// Day 20
+{t:"Preparing for Winter",ph:"Fall Farm",
+ e:["Water crops"],
+ p:["Start thinking about Winter plans — mining, fishing, socializing, crafting","Mine and sell for Winter gold reserves"],
+ o:["Last foraging sprint before end of season"],
+ r:["No watering — Winter prep thinking time!"],
+ tip:"Winter has no outdoor farming — use it for mining, fishing, building friendships, and crafting. It's a unique season!",
+ har:"🫙 Cranberries — 4th harvest! (Day 21 cycle)",ev:null,hint:null},
+
+// Day 21
+{t:"Final Week of Fall",ph:"Season Wrap-Up",
+ e:["Water crops","Harvest any mature crops"],
+ p:["DON'T plant anything new that won't mature before Day 28!","Mine and sell"],
+ o:["Forage Fall items before they disappear — Blackberry, Wild Plum are great!"],
+ r:["No watering — last sprint!"],
+ tip:"Fall forageables disappear at season end. Blackberries, Wild Plums, and Hazelnuts are valuable as gifts and community center items!",
+ har:null,ev:null,
+ hint:"Something spooky is brewing in town in 6 days... an evening event full of tricks and treats..."},
+
+// Day 22
+{t:"Community Center Check",ph:"Season Wrap-Up",
+ e:["Water crops"],
+ p:["Visit the community center — are there Fall-specific things you can contribute now?","Mine and sell"],
+ o:["Socialize, forage, fish"],
+ r:["No watering — use time well!"],
+ tip:"Keep contributing to the community center whenever you have the right items. Each completed bundle brings the valley closer to something special!",
+ har:null,ev:null,
+ hint:"Something spooky is happening in 5 days... in Pelican Town... at night!"},
+
+// Day 23
+{t:"Harvest Rush",ph:"Season Wrap-Up",
+ e:["Water crops","Harvest any mature crops — sell everything!"],
+ p:["Mine for last Fall resources","Sell and store items for Winter"],
+ o:["Final artisan goods production"],
+ r:["No watering — full harvest and sell day!"],
+ tip:"Spirit's Eve starts at 9PM — you can farm ALL DAY and still attend! Like the Moonlight Jellies, it's an evening event.",
+ har:"🫙 Cranberries — 5th and final harvest! (Day 26)",ev:null,
+ hint:"Spirit's Eve is in 4 days — a spooky evening festival in Pelican Town starting at 9pm!"},
+
+// Day 24
+{t:"Almost Done With Fall",ph:"Season Wrap-Up",
+ e:["Water crops","Harvest any ready crops"],
+ p:["Sell everything possible","Don't plant new crops!"],
+ o:["Last social calls of Fall"],
+ r:["No watering — final Fall push!"],
+ tip:"Spirit's Eve is at 9PM — harvest all day, then head to town in the evening for the festival!",
+ har:null,ev:null,
+ hint:"Spirit's Eve is in 3 days! Farm all day and attend the spooky evening festival starting at 9pm in Pelican Town."},
+
+// Day 25
+{t:"Three Days Left",ph:"Season Wrap-Up",
+ e:["Water crops","Harvest anything ready"],
+ p:["Last mining push of Fall","Sell all crops and resources"],
+ o:["Final Fall gifts to friends"],
+ r:["No watering!"],
+ tip:"Prepare a good costume and some spirit... Spirit's Eve is worth attending for the maze and the prizes hidden inside!",
+ har:null,ev:null,
+ hint:"Spirit's Eve is in 2 days! Farm the whole day on Day 27, then attend starting at 9pm."},
+
+// Day 26
+{t:"Second-to-Last Day",ph:"Season Wrap-Up",
+ e:["Harvest ANY ready crops today and tomorrow","Water only crops you'll harvest tomorrow"],
+ p:["Sell what you have","Stock up food and supplies for Winter (no farming for a whole season!)"],
+ o:["Last foraging push"],
+ r:["No watering!"],
+ tip:"Stock up on food before Winter arrives — no crops means you'll rely on bought, cooked, or foraged food for energy restoration!",
+ har:null,ev:null,
+ hint:"Spirit's Eve is TOMORROW NIGHT at 9pm in Pelican Town! Farm all day first."},
+
+// Day 27 — SPIRIT'S EVE
+{t:"🎃 Spirit's Eve",ph:"Festival Day (Evening)",
+ e:["Farm all morning and afternoon — HARVEST EVERYTHING","Head to Pelican Town at 9pm for Spirit's Eve"],
+ p:["Harvest every single crop — they wither tonight!","Attend the festival after 9pm and explore!"],
+ o:["Find your way through the Spirit's Eve maze for prizes!"],
+ r:["No watering — full harvest day then festival!"],
+ tip:"Explore the Spirit's Eve maze completely — there are valuable prizes hidden for those who find their way through! Bring torchlight.",
+ har:"🌾 HARVEST EVERYTHING before tonight!",
+ ev:{n:"🎃 Spirit's Eve — Pelican Town, 9pm",h:"Unique evening festival — farm ALL DAY before it starts at 9pm! Then head to town for a spooky Halloween-style event. Explore the haunted maze inside the festival area for hidden prizes. Worth doing!"},
+ hint:null},
+
+// Day 28
+{t:"End of Fall — Winter Arrives!",ph:"Season Wrap-Up",
+ e:["HARVEST EVERYTHING this morning — final chance!","Clear your fields","Sell all Fall crops"],
+ p:["Stock up on food and supplies for the farming-free Winter","Plan your Winter activities: mining, fishing, relationships await!"],
+ o:["Review your Year 1 progress so far!"],
+ r:["No watering needed for the final day!"],
+ tip:"Winter is completely different — no outdoor farming! Embrace the change: mine deep, fish the winter waters, and build friendships. It's a great reset!",
+ har:"🌾 FINAL Fall harvest — clear every crop!",ev:null,hint:null},
+],
+
+// ══════════════ WINTER ══════════════
+winter:[
+// Day 1
+{t:"❄️ Winter in Stardew Valley",ph:"New Season",
+ e:["No crops to water — enjoy the change of pace!","Stock up on food from Pierre's for energy restoration"],
+ p:["Head to the mines — all your energy goes here now!","Decide your Winter focus: deep mining, fishing, or relationships (or all three!)"],
+ o:["Fish — Winter brings unique fish to catch","Explore areas of the valley you haven't fully visited"],
+ r:["Even more energy with rain — it's a great mining day!"],
+ tip:"Winter means no outdoor farming. But it's perfect for deep mining, rare fishing, and catching up on friendships. Embrace the change!",
+ har:null,ev:null,hint:null},
+
+// Day 2
+{t:"Deep Winter Mining",ph:"Winter Mining",
+ e:["Mine today — full energy with no watering!"],
+ p:["Push as deep in the mines as you can","Bring plenty of food — you can stay down there much longer now!"],
+ o:["Fish in Winter waterways","Socialize with cozy winter townspeople"],
+ r:["Rain = even MORE energy — great mining day!"],
+ tip:"With no crops to water, you have dramatically more daily energy for mining. This is your best chance to reach the deepest floors!",
+ har:null,ev:null,hint:null},
+
+// Day 3
+{t:"Social Winter Begins",ph:"Winter Mining",
+ e:["Mine or fish today"],
+ p:["Visit townspeople — Winter is a great time to deepen friendships","Gift 2 items to people you haven't gifted lately"],
+ o:["Craft items with Winter materials","Explore for Winter forageables: Holly, Crystal Fruit, Snow Yam, Crocus, Nautilus Shell"],
+ r:["Even more energy for mining and exploration!"],
+ tip:"Winter forageables: Holly (beach/forest), Crystal Fruit (farm/forest), Snow Yam (digging with hoe), Crocus (farm/town), Nautilus Shell (beach)!",
+ har:null,ev:null,hint:null},
+
+// Day 4
+{t:"Winter Fishing",ph:"Winter Mining",
+ e:["Mine or fish — full energy available!"],
+ p:["Try fishing in different spots — Winter has unique fish everywhere","Mine for progress between fishing trips"],
+ o:["Socialize, craft, explore"],
+ r:["Rainy days bring Eels to rivers at night!"],
+ tip:"Winter fish: Midnight Carp (river/lake at night), Squid (ocean at night), Lingcod (mountain lake), Eel (river when raining), Woodskip (secret woods)!",
+ har:null,ev:null,hint:null},
+
+// Day 5
+{t:"Festival of Ice Approaches",ph:"Winter Mining",
+ e:["Mine or fish"],
+ p:["Continue your Winter goals","Explore all areas — Winter reveals things you haven't seen in warmer months!"],
+ o:["Social visits, crafting"],
+ r:["Extra energy — make the most of it!"],
+ tip:"Cindersap Forest south of your farm has fishing spots, a Wizard's Tower, and other interesting locations worth exploring in Winter!",
+ har:null,ev:null,
+ hint:"The Festival of Ice is coming in 3 days in Cindersap Forest! An ice fishing competition awaits."},
+
+// Day 6
+{t:"Almost Festival Time",ph:"Winter Mining",
+ e:["Mine or fish"],
+ p:["Continue Winter goals","Check the community center for anything you can contribute from Winter materials!"],
+ o:["Explore, socialize, craft"],
+ r:["Bonus energy — use it well!"],
+ tip:"The Festival of Ice has a fishing competition! If you want to do well, make sure your fishing skill is in good shape.",
+ har:null,ev:null,
+ hint:"Festival of Ice is in 2 days! Head to Cindersap Forest at 9am on Winter Day 8."},
+
+// Day 7
+{t:"Festival Eve",ph:"Winter Mining",
+ e:["Mine or fish","Check your supplies for tomorrow"],
+ p:["Prepare for tomorrow's festival","Enjoy your usual Winter activities"],
+ o:["Socialize, craft"],
+ r:["Extra energy today!"],
+ tip:"The Festival of Ice is a fun change of pace. Even if you don't win the competition, the atmosphere and prizes make it worth attending!",
+ har:null,ev:null,
+ hint:"Festival of Ice is TOMORROW in Cindersap Forest at 9am! Ice fishing competition and winter fun!"},
+
+// Day 8 — FESTIVAL OF ICE
+{t:"⛸️ Festival of Ice!",ph:"Festival Day",
+ e:["Head to Cindersap Forest at 9am for the Festival of Ice"],
+ p:["Participate in the ice fishing competition!","Talk to all the festival attendees"],
+ o:["Browse festival prizes","Enjoy the winter carnival atmosphere!"],
+ r:["No outdoor weather issues — head to the forest!"],
+ tip:"Even if you don't place in the competition, the festival is worth attending for the atmosphere and the prizes you can earn!",
+ har:null,
+ ev:{n:"⛸️ Festival of Ice — Cindersap Forest, 9am",h:"A winter fishing competition on the ice! Compete against the townspeople in a timed ice fishing challenge. Earn festival tokens to spend on prizes. A fun and cozy mid-winter celebration!"},
+ hint:null},
+
+// Day 9
+{t:"Post-Festival Mining",ph:"Winter Mining",
+ e:["Mine — full day available!"],
+ p:["Push deep into the mines","Sell resources for gold"],
+ o:["Fish, socialize"],
+ r:["Extra energy — go deep!"],
+ tip:"How deep in the mines have you gotten? Winter is your best chance to reach the deepest floors before Year 2!",
+ har:null,ev:null,hint:null},
+
+// Day 10
+{t:"Mid-Winter Progress",ph:"Winter Mining",
+ e:["Mine or fish — choose your Winter specialty"],
+ p:["Track your skill levels — Winter is ideal for leveling up Mining and Fishing","Save gold for Year 2 farm investments"],
+ o:["Social visits, crafting"],
+ r:["Bonus energy for a great day!"],
+ tip:"Each skill at level 10 unlocks a final profession. If you're close to level 10 in anything, Winter is a great time to push for it!",
+ har:null,ev:null,hint:null},
+
+// Day 11
+{t:"Building Relationships",ph:"Winter Mining",
+ e:["Social day — visit multiple villagers and bring gifts"],
+ p:["Check the calendar for upcoming birthdays","Give 2 items to 2–3 different people"],
+ o:["Mine or fish between social visits"],
+ r:["Perfect day for indoor socializing!"],
+ tip:"Winter is perfect for friendships — many villagers spend more time indoors and are easier to find. Check the saloon in the evenings!",
+ har:null,ev:null,hint:null},
+
+// Day 12
+{t:"Deeper and Deeper",ph:"Winter Mining",
+ e:["Mine today"],
+ p:["Push for your personal best depth!","Sell gems and ore — they're worth significant gold"],
+ o:["Craft with mined materials","Socialize"],
+ r:["Rainy mining = even more energy underground!"],
+ tip:"Gems found in the mines can be very valuable — but some also have unique uses. Think before selling all of them!",
+ har:null,ev:null,hint:null},
+
+// Day 13
+{t:"Winter Fishing Day",ph:"Winter Mining",
+ e:["Fish today for a change of pace!"],
+ p:["Try different water sources — each has unique Winter fish","Check your fishing collection — anything new to discover?"],
+ o:["Mine, socialize"],
+ r:["Rainy fishing can attract different fish — Eels at night!"],
+ tip:"Squid (ocean at night, Winter only) and Midnight Carp (river/lake nights) are unique Winter-only catches worth adding to your collection!",
+ har:null,ev:null,hint:null},
+
+// Day 14
+{t:"Night Market Eve",ph:"Night Market",
+ e:["Mine or fish"],
+ p:["Prepare for the Night Market starting TOMORROW (Days 15–17)!","Save some gold for Night Market shopping — rare items available!"],
+ o:["Socialize, craft"],
+ r:["Extra energy for a productive day before the market!"],
+ tip:"The Night Market runs 3 evenings on the beach. You can mine and work during the DAY and visit the market at NIGHT. Best of both worlds!",
+ har:null,ev:null,
+ hint:"The Night Market begins TOMORROW (Days 15–17) on the beach! Shop for rare items and experiences every evening after dark."},
+
+// Day 15
+{t:"Night Market — Day 1 of 3",ph:"Night Market",
+ e:["Mine or fish during the day"],
+ p:["Visit the Night Market on the beach this evening!","Look for the submarine ride and special merchants"],
+ o:["Browse for rare seeds and unique items you can't find elsewhere"],
+ r:["Extra daytime energy for mining — then Night Market in the evening!"],
+ tip:"The Night Market submarine lets you catch deep-sea fish you can't find anywhere else! Bring fishing gear and food for the ride!",
+ har:null,
+ ev:{n:"🌙 Night Market — Night 1 of 3 (Beach, evening)",h:"The Night Market runs this evening on the beach! It's an evening-only event — you can work all day and visit after dark. Explore the submarine, the mermaid show, and the special merchant selling rare items and seeds!"},
+ hint:null},
+
+// Day 16
+{t:"Night Market — Day 2 of 3",ph:"Night Market",
+ e:["Mine or fish during the day"],
+ p:["Return to the Night Market this evening","Check merchants you may have missed yesterday"],
+ o:["Try the submarine fishing again if you enjoyed it yesterday"],
+ r:["Extra energy during the day — use it well!"],
+ tip:"The mermaid show at the Night Market is a unique sight! The special cooking merchant sells rare recipes not available anywhere else.",
+ har:null,
+ ev:{n:"🌙 Night Market — Night 2 of 3 (Beach, evening)",h:"Second night of the Night Market! See the mermaid show, try the submarine, and check the special merchant for rare items and recipes. Don't miss anything — tomorrow is the last night!"},
+ hint:null},
+
+// Day 17
+{t:"Night Market — Last Night!",ph:"Night Market",
+ e:["Mine during the day","Make your FINAL Night Market purchases this evening — last night!"],
+ p:["Don't miss anything at the market tonight","Make any final purchases"],
+ o:["Last submarine fishing trip"],
+ r:["Extra energy during the day!"],
+ tip:"After tonight, the Night Market is gone for the year. Buy any seeds or rare items you want before it closes!",
+ har:null,
+ ev:{n:"🌙 Night Market — FINAL Night (Beach, evening)",h:"Last night of the Night Market! Make any final purchases before it closes for the year. Check all the merchants one more time — the Traveling Merchant, the Magic Shop Boat, and the submarine all close after tonight."},
+ hint:null},
+
+// Day 18
+{t:"Back to Winter Routine",ph:"Winter Mining",
+ e:["Mine — full energy, no events"],
+ p:["Continue mining and fishing","Sell accumulated resources from the Night Market week"],
+ o:["Social visits, crafting"],
+ r:["Bonus energy — great mining day!"],
+ tip:"One week until the year's final festival! Use this time productively — there's still a lot to accomplish before Year 2.",
+ har:null,ev:null,hint:null},
+
+// Day 19
+{t:"Building for Year 2",ph:"Winter Mining",
+ e:["Mine or fish"],
+ p:["Think about Year 2 plans: what crops will you grow? What buildings will you add?","Save gold for Year 2 investments"],
+ o:["Socialize, craft, explore"],
+ r:["Extra energy — use it!"],
+ tip:"Year 2 opens new opportunities. With better tools, more money, and stronger friendships, you'll hit the ground running. Start planning!",
+ har:null,ev:null,hint:null},
+
+// Day 20
+{t:"Social Push",ph:"Winter Mining",
+ e:["Social day — give gifts and visit everyone you can"],
+ p:["Gift 2 items to multiple people","Check the calendar for upcoming birthdays"],
+ o:["Mine or fish between visits"],
+ r:["Perfect indoor social weather!"],
+ tip:"Some villagers are only available at specific times. Check schedules — evenings in the saloon often find people who are hard to catch during the day!",
+ har:null,ev:null,hint:null},
+
+// Day 21
+{t:"Mining Marathon",ph:"Winter Mining",
+ e:["Mine — push as deep as you can!"],
+ p:["Bring lots of food and aim for a personal depth record","Sell gems and ore after your run"],
+ o:["Fish, socialize"],
+ r:["Extra energy — go deeper than ever!"],
+ tip:"The last stretch of Winter is perfect for deep mining with no distractions. This could be your best mining day of the year!",
+ har:null,ev:null,
+ hint:"The Feast of the Winter Star is in 4 days! A secret gift exchange — check your mailbox for who you're gifting!"},
+
+// Day 22
+{t:"Almost Year's End",ph:"Year's End",
+ e:["Mine or fish"],
+ p:["Continue Winter goals","Gather a gift for the upcoming festival — check your mail for who you're giving to!"],
+ o:["Social visits, crafting"],
+ r:["Extra energy for a great day!"],
+ tip:"For the Feast of the Winter Star gift exchange, choose something the recipient truly loves. Check their preferences for the best result!",
+ har:null,ev:null,
+ hint:"Feast of the Winter Star is in 3 days — you should have received mail naming your secret gift recipient. Prepare something they'll love!"},
+
+// Day 23
+{t:"Gift Preparation",ph:"Year's End",
+ e:["Prepare your gift for the Feast of the Winter Star","Mine or fish"],
+ p:["Choose an item your secret recipient truly loves — check their known preferences","Keep building friendships in these final days"],
+ o:["Social visits, crafting"],
+ r:["Bonus energy!"],
+ tip:"If you haven't received the mail about your secret gift recipient yet, check your mailbox! It arrives before Day 23.",
+ har:null,ev:null,
+ hint:"Feast of the Winter Star is in 2 days! Secret gift exchange in Pelican Town. Make your gift count!"},
+
+// Day 24
+{t:"Winter Star Eve",ph:"Year's End",
+ e:["Mine or fish","Have your gift ready for tomorrow's exchange"],
+ p:["Final preparations for the year's last festival","Last social visits before the festival"],
+ o:["Final Year 1 wrap-up activities"],
+ r:["Extra energy — last productive day!"],
+ tip:"Giving a truly loved gift at the exchange will significantly boost friendship with that villager. Gold star quality doesn't hurt either!",
+ har:null,ev:null,
+ hint:"The Feast of the Winter Star is TOMORROW at 9am in Pelican Town! Bring your secret gift!"},
+
+// Day 25 — FEAST OF THE WINTER STAR
+{t:"🎁 Feast of the Winter Star",ph:"Festival Day",
+ e:["Head to Pelican Town at 9am for the Feast of the Winter Star","Give your secret gift to your assigned villager"],
+ p:["Receive your gift in return!","Talk to all the festival attendees"],
+ o:["Celebrate making it through Year 1!"],
+ r:["Head straight to town — no farm chores today!"],
+ tip:"You've made it to the final festival of Year 1! Year 2 brings even more adventures. You're ready!",
+ har:null,
+ ev:{n:"🎁 Feast of the Winter Star — Pelican Town, 9am",h:"The secret gift exchange! Give your best gift to your assigned person and receive one in return. A warm, communal end to the year. Everyone in town gathers — enjoy the atmosphere and the connections you've built this year!"},
+ hint:null},
+
+// Day 26
+{t:"Final Days of Year 1",ph:"Year's End",
+ e:["Mine or fish — last few days!"],
+ p:["Sell any remaining resources to maximize starting gold for Year 2","Think about what you'll do differently in Year 2"],
+ o:["Final social visits of the year"],
+ r:["Extra energy for the last stretch!"],
+ tip:"You've almost completed Year 1! Year 2 opens new storylines, crops, and opportunities. Everything you've built this year carries over!",
+ har:null,ev:null,hint:null},
+
+// Day 27
+{t:"Second-to-Last Day",ph:"Year's End",
+ e:["Mine or fish for final resources"],
+ p:["Sell everything you can before the year ends","Make final preparations for Year 2"],
+ o:["Final gift-giving, crafting, exploring"],
+ r:["Bonus energy for the penultimate day!"],
+ tip:"Any crops in a greenhouse (if unlocked) continue growing into Year 2! Otherwise, enjoy the final Winter days and plan ahead.",
+ har:null,ev:null,hint:null},
+
+// Day 28
+{t:"🎉 Year 1 Complete!",ph:"Year's End",
+ e:["Enjoy your final day of Year 1!","Sell any remaining items"],
+ p:["Reflect on everything you've accomplished","Look forward to Year 2 with everything you've built!"],
+ o:["Last Winter activities","Plan your Year 2 Day 1 strategy!"],
+ r:["A peaceful final day no matter the weather!"],
+ tip:"You completed Year 1! Every first year in Stardew Valley is unique. Year 2 is where things really open up. Congratulations, farmer! 🌱",
+ har:null,ev:null,hint:null},
+]
+};
+
+// Milestones per season
+const MS = {
+  spring:[
+    "Plant your first full field of crops",
+    "Earn 1,000g from your farm",
+    "Explore the old building in the north part of town",
+    "Head into the mines for the first time",
+    "Upgrade your first tool at Clint's Blacksmith",
+    "Build a friendship (4+ hearts with any villager)",
+    "Reach Farming Level 2",
+    "Reach Mining Level 2",
+    "Buy Strawberry Seeds at the Egg Festival (Day 13)!",
+    "End Spring with 5,000g+ saved"
+  ],
+  summer:[
+    "Plant Blueberries on Summer Day 1",
+    "Upgrade your backpack (2,000g at Pierre's)",
+    "Reach Mining Level 5",
+    "Catch your first Summer fish",
+    "Reach Fishing Level 3",
+    "Build artisan production (Keg or Preserves Jar)",
+    "Earn 10,000g total",
+    "Upgrade watering can to at least Copper level",
+    "Build a 6+ heart friendship with any villager"
+  ],
+  fall:[
+    "Plant Cranberries on Fall Day 1",
+    "Enter the Grange Display at the Stardew Valley Fair (Day 16)",
+    "Earn 25,000g total",
+    "Reach Farming Level 5",
+    "Reach Mining Level 7",
+    "Contribute to community center bundles",
+    "Build an 8+ heart friendship with at least one villager",
+    "Harvest Cranberries 3+ times this season"
+  ],
+  winter:[
+    "Reach the deepest mine floors you can",
+    "Attend all 3 nights of the Night Market (Days 15–17)",
+    "Give a loved gift at the Feast of the Winter Star (Day 25)",
+    "Reach any skill at Level 8+",
+    "Earn 50,000g total by end of Year 1",
+    "Have 5+ villagers at 6+ hearts",
+    "Contribute to 3+ community center bundles",
+    "Plan your Year 2 farm layout and goals!"
+  ]
+};
+
+// Festival days (for calendar markers)
+const FESTS = {
+  spring:[13,24], summer:[11,28], fall:[16,27], winter:[8,15,16,17,25]
+};
+
+// ══════════════════════════════════════════════════
+// APP STATE & LOGIC
+// ══════════════════════════════════════════════════
+
+const SEASONS = ['spring','summer','fall','winter'];
+const S_ICONS = {spring:'🌱',summer:'☀️',fall:'🍂',winter:'❄️'};
+const S_CLASS = {spring:'',summer:'ss',fall:'sf',winter:'sw'};
+
+function loadState(){
+  try{ return JSON.parse(localStorage.getItem('sdv_y1_v2')||'null'); }catch(e){ return null; }
+}
+function saveState(s){
+  localStorage.setItem('sdv_y1_v2', JSON.stringify(s));
+}
+
+let state = loadState() || null;
+
+// ── SETUP ──
+document.querySelectorAll('.sBtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.sBtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  });
+});
+
+document.getElementById('start-btn').addEventListener('click',()=>{
+  const season = document.querySelector('.sBtn.active').dataset.s;
+  const day = Math.max(1,Math.min(28,parseInt(document.getElementById('start-day').value)||1));
+  state = {
+    season, day,
+    weather: {},   // { "spring_1": "sunny", ... }
+    checked: {},   // { "spring_1_ess_0": true, ... }
+    milestones: {} // { "spring_0": true, ... }
+  };
+  saveState(state);
+  showApp();
+});
+
+// ── SHOW APP ──
+function showApp(){
+  document.getElementById('setup').style.display='none';
+  const app = document.getElementById('app');
+  app.style.display='flex';
+  app.className = S_CLASS[state.season];
+  renderDay();
+}
+
+function renderDay(){
+  const {season, day} = state;
+  const d = D[season][day-1];
+  const wx = state.weather[`${season}_${day}`] || 'sunny';
+  const isRainy = wx==='rainy'||wx==='stormy'||wx==='snowy';
+
+  // Header
+  document.getElementById('season-icon').textContent = S_ICONS[season];
+  document.getElementById('season-name').textContent = season.charAt(0).toUpperCase()+season.slice(1);
+  document.getElementById('day-disp').textContent = `Day ${day}`;
+
+  // Progress bar
+  document.getElementById('prog-bar-inner').style.width = `${(day/28)*100}%`;
+
+  // Progress dots (week markers + festivals)
+  const dots = document.getElementById('prog-dots');
+  dots.innerHTML = '';
+  for(let i=1;i<=28;i+=7){
+    const span = document.createElement('span');
+    span.textContent = `Day ${i}`;
+    if(FESTS[season].includes(i)) span.classList.add('fest');
+    dots.appendChild(span);
+  }
+
+  // Update season class
+  document.getElementById('app').className = S_CLASS[season];
+
+  // Weather buttons
+  document.querySelectorAll('.wxBtn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.wx===wx);
+    // Hide snowy if not Winter
+    b.style.display = (b.dataset.wx==='snowy' && season!=='winter') ? 'none' : '';
+  });
+
+  // Day title
+  document.getElementById('day-title').textContent = d.t;
+  document.getElementById('day-phase').textContent = `Phase: ${d.ph}`;
+
+  // Event banner
+  const eb = document.getElementById('event-banner');
+  if(d.ev){
+    eb.innerHTML = `<div class="banner-title">${d.ev.n}</div><div>${d.ev.h}</div>`;
+    eb.hidden = false;
+  } else { eb.hidden = true; }
+
+  // Harvest banner
+  const hb = document.getElementById('harvest-banner');
+  if(d.har){
+    hb.innerHTML = `<div class="banner-title">🌾 Harvest Today!</div><div>${d.har}</div>`;
+    hb.hidden = false;
+  } else { hb.hidden = true; }
+
+  // Hint banner
+  const hnb = document.getElementById('hint-banner');
+  if(d.hint){
+    hnb.innerHTML = `<div class="banner-title">📅 Coming Soon...</div><div>${d.hint}</div>`;
+    hnb.hidden = false;
+  } else { hnb.hidden = true; }
+
+  // Weather banner
+  const wxb = document.getElementById('wx-banner');
+  if(wx==='rainy'){
+    wxb.className='banner banner-rain';
+    wxb.innerHTML='<strong>🌧️ Rainy Day!</strong> Crops water themselves — no watering needed! You have extra energy today.';
+    wxb.hidden=false;
+  } else if(wx==='stormy'){
+    wxb.className='banner banner-storm';
+    wxb.innerHTML='<strong>⛈️ Stormy Day!</strong> Rain waters crops — skip watering! ⚡ Lightning can hit crops — consider placing a Lightning Rod near your fields.';
+    wxb.hidden=false;
+  } else if(wx==='snowy'){
+    wxb.className='banner banner-rain';
+    wxb.innerHTML='<strong>🌨️ Snowy Day!</strong> A quiet winter day — bundle up and head to the mines or enjoy some time indoors with the townsfolk.';
+    wxb.hidden=false;
+  } else { wxb.hidden=true; }
+
+  // Tasks — filter watering if rainy/stormy
+  function waterFilter(tasks){
+    if(!isRainy) return tasks;
+    return tasks.filter(t=>!/water/i.test(t));
+  }
+
+  renderTasks('ess', waterFilter(d.e), season, day, 'ess');
+  renderTasks('pri', waterFilter(d.p), season, day, 'pri');
+  renderTasks('opt', d.o, season, day, 'opt');
+
+  const rainSec = document.getElementById('sec-rain');
+  if(isRainy && d.r && d.r.length){
+    renderTasks('rain', d.r, season, day, 'rain');
+    rainSec.style.display='';
+  } else {
+    rainSec.style.display='none';
+  }
+
+  // Tip
+  const tipBox = document.getElementById('tip-box');
+  if(d.tip){
+    document.getElementById('tip-txt').textContent = d.tip;
+    tipBox.style.display='';
+  } else { tipBox.style.display='none'; }
+
+  // Nav buttons
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  prevBtn.disabled = (day===1 && SEASONS.indexOf(season)===0);
+  const isLastDay = (day===28 && season==='winter');
+  nextBtn.textContent = isLastDay ? '🎉 Year Complete!' : 'Next Day →';
+  nextBtn.disabled = isLastDay;
+
+  // Milestones
+  renderMilestones(season);
+
+  // Calendar
+  renderCalendar(season, day);
+}
+
+function renderTasks(listId, tasks, season, day, cat){
+  const container = document.getElementById(`tl-${listId}`);
+  container.innerHTML='';
+  tasks.forEach((task,i)=>{
+    const key=`${season}_${day}_${cat}_${i}`;
+    const done = !!state.checked[key];
+    const item = document.createElement('div');
+    item.className = 'task-item' + (done?' done':'');
+    const cb = document.createElement('input');
+    cb.type='checkbox'; cb.checked=done;
+    cb.addEventListener('change',()=>{
+      state.checked[key]=cb.checked;
+      saveState(state);
+      item.classList.toggle('done',cb.checked);
+    });
+    const lbl = document.createElement('label');
+    lbl.textContent=task;
+    item.appendChild(cb);
+    item.appendChild(lbl);
+    item.addEventListener('click',(e)=>{ if(e.target!==cb){ cb.checked=!cb.checked; cb.dispatchEvent(new Event('change')); }});
+    container.appendChild(item);
+  });
+}
+
+function renderMilestones(season){
+  const list = document.getElementById('ms-list');
+  list.innerHTML='';
+  MS[season].forEach((m,i)=>{
+    const key=`ms_${season}_${i}`;
+    const done = !!state.milestones[key];
+    const item = document.createElement('div');
+    item.className='ms-item'+(done?' done':'');
+    const cb = document.createElement('input');
+    cb.type='checkbox'; cb.checked=done;
+    cb.addEventListener('change',()=>{
+      state.milestones[key]=cb.checked;
+      saveState(state);
+      item.classList.toggle('done',cb.checked);
+    });
+    const lbl = document.createElement('label');
+    lbl.textContent=m;
+    item.appendChild(cb);
+    item.appendChild(lbl);
+    item.addEventListener('click',(e)=>{ if(e.target!==cb){ cb.checked=!cb.checked; cb.dispatchEvent(new Event('change')); }});
+    list.appendChild(item);
+  });
+}
+
+function renderCalendar(season, currentDay){
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML='';
+  for(let d=1;d<=28;d++){
+    const cell = document.createElement('div');
+    cell.className='cal-day';
+    cell.textContent=d;
+    if(d<currentDay) cell.classList.add('past');
+    if(d===currentDay) cell.classList.add('current');
+    if(FESTS[season].includes(d)) cell.classList.add('fest');
+    grid.appendChild(cell);
+  }
+}
+
+// Weather buttons
+document.querySelectorAll('.wxBtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const wx = b.dataset.wx;
+    state.weather[`${state.season}_${state.day}`]=wx;
+    saveState(state);
+    renderDay();
+  });
+});
+
+// Next day
+document.getElementById('next-btn').addEventListener('click',()=>{
+  if(state.day<28){
+    state.day++;
+  } else {
+    const idx = SEASONS.indexOf(state.season);
+    if(idx<3){
+      state.season=SEASONS[idx+1];
+      state.day=1;
+    } else { return; }
+  }
+  saveState(state);
+  document.getElementById('app').className = S_CLASS[state.season];
+  renderDay();
+  window.scrollTo(0,0);
+});
+
+// Prev day
+document.getElementById('prev-btn').addEventListener('click',()=>{
+  if(state.day>1){
+    state.day--;
+  } else {
+    const idx = SEASONS.indexOf(state.season);
+    if(idx>0){
+      state.season=SEASONS[idx-1];
+      state.day=28;
+    } else { return; }
+  }
+  saveState(state);
+  document.getElementById('app').className = S_CLASS[state.season];
+  renderDay();
+  window.scrollTo(0,0);
+});
+
+// Jump button
+document.getElementById('jump-btn').addEventListener('click',()=>{
+  const s = prompt('Season? (spring/summer/fall/winter)','');
+  if(!SEASONS.includes(s)) return;
+  const d = parseInt(prompt('Day? (1–28)','1'));
+  if(isNaN(d)||d<1||d>28) return;
+  state.season=s; state.day=d;
+  saveState(state);
+  document.getElementById('app').className=S_CLASS[s];
+  renderDay();
+});
+
+// Reset
+document.getElementById('reset-btn').addEventListener('click',()=>{
+  if(!confirm('Reset all progress and return to setup?')) return;
+  localStorage.removeItem('sdv_y1_v2');
+  location.reload();
+});
+
+// ── INIT ──
+if(state){
+  showApp();
+}
+</script>
+</body>
+</html>
