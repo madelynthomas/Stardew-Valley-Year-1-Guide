@@ -67,7 +67,47 @@ h3{font-size:1.2rem;}
 
 /* Main layout */
 #main{display:grid;grid-template-columns:1fr 280px;gap:1rem;padding:1rem 1.2rem;flex:1;align-items:start;}
-@media(max-width:700px){#main{grid-template-columns:1fr;}#sidebar{order:2;}}
+/* ── MOBILE TABS ── */
+#mobile-tabs{display:none;background:var(--pdark);}
+.tab-btn{flex:1;padding:.55rem;background:transparent;border:none;border-bottom:3px solid transparent;color:rgba(255,255,255,.65);font-family:'VT323',monospace;font-size:1.15rem;cursor:pointer;transition:color .2s,border-color .2s;}
+.tab-btn.active{color:#fff;border-bottom-color:#fff;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  #main{grid-template-columns:1fr;padding:.7rem .8rem;gap:.7rem;}
+  #mobile-tabs{display:flex;}
+  #sidebar{display:none;}
+  #sidebar.tab-visible{display:flex;flex-direction:column;}
+  #day-panel.panel-hidden{display:none;}
+  #wx-bar{padding:.4rem .8rem;}
+  #prog-wrap{padding:3px .8rem;}
+}
+
+@media(max-width:480px){
+  body{font-size:18px;}
+  #hdr{padding:.45rem .8rem;gap:.2rem;}
+  #season-name{display:none;}
+  #day-disp{font-size:1.5rem;}
+  #yr-disp{font-size:.78rem;}
+  .btn-sm{padding:.3rem .45rem;font-size:.85rem;}
+  .wxBtn{font-size:1rem;padding:.3rem .45rem;min-height:40px;}
+  .wx-label{font-size:.9rem;}
+  .setup-card{padding:1.3rem 1rem;}
+  .setup-card h1{font-size:1.9rem;}
+  .task-section{padding:.6rem .75rem;}
+  .banner{padding:.5rem .75rem;}
+  #tip-box{padding:.5rem .75rem;}
+  .btn-nav{font-size:1.1rem;padding:.5rem .7rem;min-height:42px;}
+  .day-nav{gap:.5rem;}
+  .sb-section{padding:.7rem .75rem;}
+}
+
+@media(max-width:380px){
+  #prog-dots{font-size:.58rem;}
+  .sBtn{min-width:72px;font-size:1rem;}
+  #cal-grid{gap:2px;}
+  .cal-day{font-size:.62rem;}
+}
 
 /* Day panel */
 #day-panel{display:flex;flex-direction:column;gap:.8rem;}
@@ -198,6 +238,11 @@ h3{font-size:1.2rem;}
     <button class="wxBtn" data-wx="rainy">🌧️ Rainy</button>
     <button class="wxBtn" data-wx="stormy">⛈️ Stormy</button>
     <button class="wxBtn" data-wx="snowy">🌨️ Snowy</button>
+  </div>
+
+  <div id="mobile-tabs">
+    <button class="tab-btn active" data-tab="today">📋 Today</button>
+    <button class="tab-btn" data-tab="season">🗓️ Season</button>
   </div>
 
   <main id="main">
@@ -1651,6 +1696,7 @@ document.getElementById('next-btn').addEventListener('click',()=>{
   }
   saveState(state);
   document.getElementById('app').className = S_CLASS[state.season];
+  resetMobileTab();
   renderDay();
   window.scrollTo(0,0);
 });
@@ -1668,6 +1714,7 @@ document.getElementById('prev-btn').addEventListener('click',()=>{
   }
   saveState(state);
   document.getElementById('app').className = S_CLASS[state.season];
+  resetMobileTab();
   renderDay();
   window.scrollTo(0,0);
 });
@@ -1690,6 +1737,24 @@ document.getElementById('reset-btn').addEventListener('click',()=>{
   localStorage.removeItem('sdv_y1_v2');
   location.reload();
 });
+
+// ── MOBILE TABS ──
+document.querySelectorAll('.tab-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const isToday = b.dataset.tab==='today';
+    document.getElementById('day-panel').classList.toggle('panel-hidden',!isToday);
+    document.getElementById('sidebar').classList.toggle('tab-visible',!isToday);
+  });
+});
+
+function resetMobileTab(){
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.tab-btn[data-tab="today"]').classList.add('active');
+  document.getElementById('day-panel').classList.remove('panel-hidden');
+  document.getElementById('sidebar').classList.remove('tab-visible');
+}
 
 // ── INIT ──
 if(state){
