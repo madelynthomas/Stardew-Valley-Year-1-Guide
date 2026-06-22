@@ -64,6 +64,9 @@ h3{font-size:1.2rem;}
 .wx-label{color:var(--muted);font-size:.95rem;}
 .wxBtn{padding:.3rem .8rem;border:2px solid var(--border);background:var(--card);cursor:pointer;font-family:'VT323',monospace;font-size:1.1rem;transition:all .15s;}
 .wxBtn.active,.wxBtn:hover{background:var(--primary);color:#fff;border-color:var(--pdark);}
+.wxBtn.locked{cursor:default;opacity:.95;}
+.wxBtn:disabled{cursor:default;}
+#wx-note{color:var(--muted);font-size:.9rem;font-style:italic;}
 
 /* Main layout */
 #main{display:grid;grid-template-columns:1fr 280px;gap:1rem;padding:1rem 1.2rem;flex:1;align-items:start;}
@@ -245,6 +248,7 @@ h3{font-size:1.2rem;}
     <button class="wxBtn" data-wx="rainy">🌧️ Rainy</button>
     <button class="wxBtn" data-wx="stormy">⛈️ Stormy</button>
     <button class="wxBtn" data-wx="snowy">🌨️ Snowy</button>
+    <span id="wx-note" style="display:none"></span>
   </div>
 
   <div id="mobile-tabs">
@@ -1458,6 +1462,37 @@ const FESTS = {
   spring:[13,24], summer:[11,28], fall:[16,27], winter:[8,15,16,17,25]
 };
 
+// Valid weather options per season (Year 1 accurate):
+//  • Snow only occurs in Winter; Winter never rains or storms (Sun/Snow only).
+//  • Storms can't happen in Spring during Year 1 (rain→storm upgrade is disabled).
+const WX_OPTS = {
+  spring:['sunny','rainy'],
+  summer:['sunny','rainy','stormy'],
+  fall:['sunny','rainy','stormy'],
+  winter:['sunny','snowy']
+};
+
+// Days with FORCED (static) weather — the game leaves the player no choice:
+//  • All 8 festival days are always clear & sunny.
+//  • Year 1 opening: Spring 1,2,4,5 sunny; Spring 3 always rains.
+//  • Summer 13 & 26 are always stormy, every year.
+const FORCED_WX = {
+  spring:{1:'sunny',2:'sunny',3:'rainy',4:'sunny',5:'sunny',13:'sunny',24:'sunny'},
+  summer:{11:'sunny',13:'stormy',26:'stormy',28:'sunny'},
+  fall:{16:'sunny',27:'sunny'},
+  winter:{8:'sunny',25:'sunny'}
+};
+// True festival days for weather purposes (NOT the Night Market markers in FESTS)
+const WX_FESTS = {spring:[13,24], summer:[11,28], fall:[16,27], winter:[8,25]};
+function getForcedWx(season,day){ return (FORCED_WX[season] && FORCED_WX[season][day]) || null; }
+function forcedWxReason(season,day){
+  if(WX_FESTS[season].includes(day)) return 'festival day — always clear & sunny';
+  if(season==='spring' && day===3) return 'Year 1 — it always rains on Spring 3';
+  if(season==='spring' && [1,2,4,5].includes(day)) return 'Year 1 — early Spring is always sunny';
+  if(season==='summer' && (day===13||day===26)) return 'always stormy — every year';
+  return 'fixed weather';
+}
+
 // ══════════════════════════════════════════════════
 // APP STATE & LOGIC
 // ══════════════════════════════════════════════════
@@ -1508,7 +1543,11 @@ function showApp(){
 function renderDay(){
   const {season, day} = state;
   const d = D[season][day-1];
-  const wx = state.weather[`${season}_${day}`] || 'sunny';
+  // Forced (static) weather overrides any stored choice; otherwise sanitize to a
+  // weather that's actually valid this season (old saves may hold invalid values).
+  const forcedWx = getForcedWx(season, day);
+  let wx = forcedWx || state.weather[`${season}_${day}`] || 'sunny';
+  if(!forcedWx && !WX_OPTS[season].includes(wx)) wx = 'sunny';
   const isRainy = wx==='rainy'||wx==='stormy'||wx==='snowy';
 
   // Header
@@ -1532,12 +1571,27 @@ function renderDay(){
   // Update season class
   document.getElementById('app').className = S_CLASS[season];
 
-  // Weather buttons
+  // Weather buttons — only valid options for the season; forced days are locked
   document.querySelectorAll('.wxBtn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.wx===wx);
-    // Hide snowy if not Winter
-    b.style.display = (b.dataset.wx==='snowy' && season!=='winter') ? 'none' : '';
+    const opt = b.dataset.wx;
+    if(forcedWx){
+      // Show only the forced weather, active and locked
+      b.style.display = (opt===forcedWx) ? '' : 'none';
+      b.classList.toggle('active', opt===forcedWx);
+      b.classList.add('locked');
+      b.disabled = true;
+    } else {
+      b.style.display = WX_OPTS[season].includes(opt) ? '' : 'none';
+      b.classList.toggle('active', opt===wx);
+      b.classList.remove('locked');
+      b.disabled = false;
+    }
   });
+  const wxNote = document.getElementById('wx-note');
+  if(wxNote){
+    wxNote.textContent = forcedWx ? `🔒 ${forcedWxReason(season,day)}` : '';
+    wxNote.style.display = forcedWx ? '' : 'none';
+  }
 
   // Day title
   document.getElementById('day-title').textContent = d.t;
@@ -1686,6 +1740,9 @@ function renderCalendar(season, currentDay){
 document.querySelectorAll('.wxBtn').forEach(b=>{
   b.addEventListener('click',()=>{
     const wx = b.dataset.wx;
+    // Ignore clicks on forced (locked) days or weather invalid for the season
+    if(getForcedWx(state.season,state.day)) return;
+    if(!WX_OPTS[state.season].includes(wx)) return;
     state.weather[`${state.season}_${state.day}`]=wx;
     saveState(state);
     renderDay();
