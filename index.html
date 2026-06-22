@@ -81,6 +81,12 @@ h3{font-size:1.2rem;}
   #day-panel.panel-hidden{display:none;}
   #wx-bar{padding:.4rem .8rem;}
   #prog-wrap{padding:3px .8rem;}
+  /* Always 2×2 grid for season buttons — prevents the 3+1 orphan layout */
+  .season-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+  .sBtn{min-width:0;width:100%;padding:.55rem .3rem;}
+  /* Tighten card on small screens */
+  .setup-card{padding:1.5rem 1.2rem;box-shadow:4px 4px 0 var(--shadow);}
+  #setup{padding:.75rem;}
 }
 
 @media(max-width:480px){
@@ -92,7 +98,7 @@ h3{font-size:1.2rem;}
   .btn-sm{padding:.3rem .45rem;font-size:.85rem;}
   .wxBtn{font-size:1rem;padding:.3rem .45rem;min-height:40px;}
   .wx-label{font-size:.9rem;}
-  .setup-card{padding:1.3rem 1rem;}
+  .setup-card{padding:1.2rem 1rem;}
   .setup-card h1{font-size:1.9rem;}
   .task-section{padding:.6rem .75rem;}
   .banner{padding:.5rem .75rem;}
@@ -104,7 +110,6 @@ h3{font-size:1.2rem;}
 
 @media(max-width:380px){
   #prog-dots{font-size:.58rem;}
-  .sBtn{min-width:72px;font-size:1rem;}
   #cal-grid{gap:2px;}
   .cal-day{font-size:.62rem;}
 }
