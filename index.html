@@ -27,13 +27,18 @@ h3{font-size:1.2rem;}
 .setup-card h1{text-align:center;color:var(--primary);margin-bottom:.5rem;}
 .setup-tagline{text-align:center;color:var(--muted);margin-bottom:1.5rem;}
 .form-group{margin-bottom:1.2rem;}
-.form-group label{display:block;color:var(--muted);margin-bottom:.4rem;font-size:1rem;}
+.form-group label{display:block;color:var(--muted);margin-bottom:.4rem;font-size:1rem;text-align:center;}
 .season-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;}
 .sBtn{flex:1;min-width:100px;padding:.5rem .3rem;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-family:'VT323',monospace;font-size:1.1rem;transition:all .2s;}
 .sBtn.active,.sBtn:hover{background:var(--primary);color:#fff;border-color:var(--pdark);}
-.day-row{display:flex;align-items:center;gap:.8rem;}
-.day-row label{color:var(--text);}
-#start-day{font-family:'VT323',monospace;font-size:1.3rem;width:70px;padding:.3rem .5rem;border:2px solid var(--border);background:var(--surface);color:var(--text);text-align:center;}
+.day-row{display:flex;align-items:center;justify-content:center;gap:.6rem;}
+.dayStep{width:46px;height:46px;display:flex;align-items:center;justify-content:center;border:2px solid var(--border);background:var(--surface);color:var(--text);font-family:'VT323',monospace;font-size:1.9rem;line-height:1;cursor:pointer;transition:all .2s;box-shadow:3px 3px 0 var(--shadow);}
+.dayStep:hover{background:var(--primary);color:#fff;border-color:var(--pdark);}
+.dayStep:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow);}
+#start-day{font-family:'VT323',monospace;font-size:1.8rem;width:84px;height:46px;padding:.2rem .3rem;border:2px solid var(--border);background:var(--surface);color:var(--text);text-align:center;box-shadow:3px 3px 0 var(--shadow);}
+/* hide native number spinners so the box matches the themed steppers */
+#start-day::-webkit-outer-spin-button,#start-day::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+#start-day{-moz-appearance:textfield;}
 .btn-primary{display:block;width:100%;padding:.7rem;background:var(--primary);color:#fff;border:2px solid var(--pdark);font-family:'VT323',monospace;font-size:1.4rem;cursor:pointer;margin-top:1rem;transition:background .2s;}
 .btn-primary:hover{background:var(--pdark);}
 .spoiler-note{font-size:.85rem;color:var(--muted);text-align:center;margin-top:.8rem;line-height:1.4;}
@@ -210,7 +215,9 @@ h3{font-size:1.2rem;}
     <div class="form-group">
       <label>What day are you starting on?</label>
       <div class="day-row">
-        <label>Day <input type="number" id="start-day" min="1" max="28" value="1"></label>
+        <button type="button" class="dayStep" id="day-minus" aria-label="Previous day">−</button>
+        <input type="number" id="start-day" min="1" max="28" value="1" inputmode="numeric" pattern="[0-9]*" aria-label="Starting day">
+        <button type="button" class="dayStep" id="day-plus" aria-label="Next day">+</button>
       </div>
     </div>
 
@@ -1516,6 +1523,19 @@ document.querySelectorAll('.sBtn').forEach(b=>{
     document.querySelectorAll('.sBtn').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
   });
+});
+
+// Day stepper (− / +) + clamp manual input to 1–28
+const startDayInput = document.getElementById('start-day');
+const clampDay = v => Math.max(1, Math.min(28, isNaN(v) ? 1 : v));
+document.getElementById('day-minus').addEventListener('click',()=>{
+  startDayInput.value = clampDay(parseInt(startDayInput.value,10) - 1);
+});
+document.getElementById('day-plus').addEventListener('click',()=>{
+  startDayInput.value = clampDay(parseInt(startDayInput.value,10) + 1);
+});
+startDayInput.addEventListener('change',()=>{
+  startDayInput.value = clampDay(parseInt(startDayInput.value,10));
 });
 
 document.getElementById('start-btn').addEventListener('click',()=>{
