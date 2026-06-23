@@ -43,12 +43,12 @@ h3{font-size:1.2rem;}
 #app.visible{display:flex;}
 
 /* Header */
-#hdr{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.2rem;background:var(--primary);color:#fff;position:sticky;top:0;z-index:100;}
-#hdr-left{display:flex;align-items:center;gap:.5rem;font-size:1.4rem;}
+#hdr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:.6rem 1.2rem;background:var(--primary);color:#fff;position:sticky;top:0;z-index:100;}
+#hdr-left{display:flex;align-items:center;gap:.5rem;font-size:1.4rem;min-width:0;}
 #hdr-center{text-align:center;}
 #day-disp{font-size:1.8rem;line-height:1;}
 #yr-disp{font-size:.9rem;opacity:.8;}
-#hdr-right{display:flex;gap:.5rem;}
+#hdr-right{display:flex;gap:.5rem;justify-content:flex-end;min-width:0;}
 .btn-sm{padding:.3rem .7rem;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'VT323',monospace;font-size:1rem;cursor:pointer;}
 .btn-sm:hover{background:rgba(255,255,255,.35);}
 
@@ -892,9 +892,9 @@ fall:[
 {t:"Mushroom Season",ph:"Fall Farm",
  e:["Water crops"],
  p:["Forage the forest for mushrooms — Common Mushroom and Chanterelle are valuable","Mine and sell resources"],
- o:["Give Fall forage items as gifts — many villagers love mushrooms","Fish in Fall waterways"],
+ o:["Sell or cook your mushrooms — most villagers DISLIKE them as gifts (only Linus, Leah & Harvey like them)","Fish in Fall waterways"],
  r:["No watering — forage and mine!"],
- tip:"Common Mushrooms and Chanterelles are excellent for cooking, gifting, and selling. Collect as many as you can find each day!",
+ tip:"Common Mushrooms and Chanterelles are great for cooking and selling — but don't gift them to most villagers (they're widely disliked; Linus, Leah & Harvey are the exceptions). Collect as many as you can find each day!",
  har:null,ev:null,hint:null},
 
 // Day 4
@@ -909,7 +909,7 @@ fall:[
 // Day 5
 {t:"First Fall Harvests Approaching",ph:"Fall Farm",
  e:["Water crops"],
- p:["Mine and farm as usual","Check crop growth — Cranberries should be ready in about 2 days!"],
+ p:["Mine and farm as usual","Check crop growth — Cranberries should be ready in about 3 days (Day 8)!"],
  o:["Build artisan goods, socialize"],
  r:["No watering — bonus energy!"],
  tip:"Beet is a universally LIKED gift — almost everyone appreciates one (except Abigail, Haley, Jas, Sam & Vincent). Check the town calendar for birthdays: a liked gift on someone's birthday gives 8× the friendship!",
@@ -936,7 +936,7 @@ fall:[
 // Day 8
 {t:"First Fall Harvest!",ph:"Fall Farm",
  e:["Water crops","HARVEST Cranberries — first harvest! (if planted Fall Day 1)","Harvest Amaranth if planted Day 1!"],
- p:["Sell or process cranberries (Cranberry Sauce/Juice adds major value!)","Mine and continue farming"],
+ p:["Sell or process cranberries — Cranberry Wine (Keg) or Cranberry Jelly (Preserves Jar) add major value!","Mine and continue farming"],
  o:["Give a cranberry to a villager who likes them","Artisan goods, social visits"],
  r:["No watering — harvest and sell!"],
  tip:"Cranberries regrow every 5 days — your next harvests are Days 13, 18, 23, and 28. That's 5 total harvests this season! Amaranth (7-day crop) is also ready today.",
@@ -1356,7 +1356,7 @@ winter:[
  p:["Choose an item your secret recipient truly loves — check their known preferences","Keep building friendships in these final days"],
  o:["Social visits, crafting"],
  r:["Bonus energy!"],
- tip:"If you haven't received the mail about your secret gift recipient yet, check your mailbox! It arrives before Day 23.",
+ tip:"Mayor Lewis mails you on Winter 18 naming your secret gift recipient — check your mailbox if you missed it! Pick something they truly love.",
  har:null,ev:null,
  hint:"Feast of the Winter Star is in 2 days! Secret gift exchange in Pelican Town. Make your gift count!"},
 
@@ -1366,7 +1366,7 @@ winter:[
  p:["Final preparations for the year's last festival","Last social visits before the festival"],
  o:["Final Year 1 wrap-up activities"],
  r:["Extra energy — last productive day!"],
- tip:"Giving a truly loved gift at the exchange will significantly boost friendship with that villager. Gold star quality doesn't hurt either!",
+ tip:"Your gift at the exchange is worth 5× the normal friendship points — so a truly loved gift gives a big boost! Gold star quality doesn't hurt either!",
  har:null,ev:null,
  hint:"The Feast of the Winter Star is TOMORROW at 9am in Pelican Town! Bring your secret gift!"},
 
@@ -1558,15 +1558,16 @@ function renderDay(){
   // Progress bar
   document.getElementById('prog-bar-inner').style.width = `${(day/28)*100}%`;
 
-  // Progress dots (week markers + festivals)
+  // Progress dots — quarter markers spanning the full 28-day month.
+  // These align with the day/28 fill (7→25%, 14→50%, 21→75%, 28→100%).
   const dots = document.getElementById('prog-dots');
   dots.innerHTML = '';
-  for(let i=1;i<=28;i+=7){
+  [1,7,14,21,28].forEach(i=>{
     const span = document.createElement('span');
     span.textContent = `Day ${i}`;
     if(FESTS[season].includes(i)) span.classList.add('fest');
     dots.appendChild(span);
-  }
+  });
 
   // Update season class
   document.getElementById('app').className = S_CLASS[season];
