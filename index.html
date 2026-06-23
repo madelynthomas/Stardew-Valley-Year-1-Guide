@@ -35,6 +35,9 @@ h3{font-size:1.2rem;}
 .dayStep{width:46px;height:46px;display:flex;align-items:center;justify-content:center;border:2px solid var(--border);background:var(--surface);color:var(--text);font-family:'VT323',monospace;font-size:1.9rem;line-height:1;cursor:pointer;transition:all .2s;box-shadow:3px 3px 0 var(--shadow);}
 .dayStep:hover{background:var(--primary);color:#fff;border-color:var(--pdark);}
 .dayStep:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow);}
+.dayStep:disabled{opacity:.35;cursor:not-allowed;box-shadow:1px 1px 0 var(--shadow);transform:translate(2px,2px);}
+.dayStep:disabled:hover{background:var(--surface);color:var(--text);border-color:var(--border);}
+#day-hint{display:none;text-align:center;color:var(--accent);font-size:.92rem;margin-top:.55rem;font-weight:bold;}
 #start-day{font-family:'VT323',monospace;font-size:1.8rem;width:84px;height:46px;padding:.2rem .3rem;border:2px solid var(--border);background:var(--surface);color:var(--text);text-align:center;box-shadow:3px 3px 0 var(--shadow);}
 /* hide native number spinners so the box matches the themed steppers */
 #start-day::-webkit-outer-spin-button,#start-day::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
@@ -219,6 +222,7 @@ h3{font-size:1.2rem;}
         <input type="number" id="start-day" min="1" max="28" value="1" inputmode="numeric" pattern="[0-9]*" aria-label="Starting day">
         <button type="button" class="dayStep" id="day-plus" aria-label="Next day">+</button>
       </div>
+      <p id="day-hint" role="alert">📅 A season only has 28 days — that's the max!</p>
     </div>
 
     <button class="btn-primary" id="start-btn">Start Your Adventure! →</button>
@@ -1527,16 +1531,42 @@ document.querySelectorAll('.sBtn').forEach(b=>{
 
 // Day stepper (− / +) + clamp manual input to 1–28
 const startDayInput = document.getElementById('start-day');
+const dayMinus = document.getElementById('day-minus');
+const dayPlus  = document.getElementById('day-plus');
+const dayHint  = document.getElementById('day-hint');
 const clampDay = v => Math.max(1, Math.min(28, isNaN(v) ? 1 : v));
-document.getElementById('day-minus').addEventListener('click',()=>{
+
+let dayHintTimer;
+function flashDayHint(){
+  dayHint.style.display = 'block';
+  clearTimeout(dayHintTimer);
+  dayHintTimer = setTimeout(()=>{ dayHint.style.display = 'none'; }, 3000);
+}
+// Disable the steppers at the season's boundaries (Day 1 and Day 28)
+function refreshDaySteppers(){
+  const v = clampDay(parseInt(startDayInput.value,10));
+  dayMinus.disabled = v <= 1;
+  dayPlus.disabled  = v >= 28;
+}
+dayMinus.addEventListener('click',()=>{
   startDayInput.value = clampDay(parseInt(startDayInput.value,10) - 1);
+  dayHint.style.display = 'none';
+  refreshDaySteppers();
 });
-document.getElementById('day-plus').addEventListener('click',()=>{
+dayPlus.addEventListener('click',()=>{
   startDayInput.value = clampDay(parseInt(startDayInput.value,10) + 1);
+  refreshDaySteppers();
+});
+// Cap typed input live at 28 and tell the user why
+startDayInput.addEventListener('input',()=>{
+  if(parseInt(startDayInput.value,10) > 28){ startDayInput.value = 28; flashDayHint(); }
+  refreshDaySteppers();
 });
 startDayInput.addEventListener('change',()=>{
   startDayInput.value = clampDay(parseInt(startDayInput.value,10));
+  refreshDaySteppers();
 });
+refreshDaySteppers(); // initial state (Day 1 → "−" disabled)
 
 document.getElementById('start-btn').addEventListener('click',()=>{
   const season = document.querySelector('.sBtn.active').dataset.s;
